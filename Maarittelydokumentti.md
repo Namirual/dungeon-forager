@@ -66,7 +66,7 @@ Mikäli aikaa riittää, pyrin toteuttamaan myös approksimoivan algoritmin, jol
 
 Arslan, O. & al. 2015. Minimum Cost Path Problem for Plug-in Hybrid Electric Vehicles. *Transportation Research Part E: Logistics and Transportation Review:* 80C: 123-141.
 
-Aversa, D. & al. 2015. Path Planning with Inventory-Driven Jump-Point-Search. *Proceedings, The Eleventh AAAI Conference on Artificial Intelligence and Interactive Digital Entertainment (AIIDE-15)*
+Aversa, D. & al. 2015. Path Planning with Inventory-Driven Jump-Point-Search. *Proceedings, The Eleventh AAAI Conference on Artificial Intelligence and Interactive Digital Entertainment (AIIDE-15)*.
 
 
 
