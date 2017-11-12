@@ -12,6 +12,7 @@ package forager;
 public class Main {
 
     /**
+     * Main class, tests and shows output of the algorithm on a single map.
      * @param args the command line arguments
      */
     public static void main(String[] args) {

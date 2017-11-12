@@ -6,7 +6,7 @@
 package forager;
 
 /**
- *
+ * A node class containing information about a tile.
  * @author lmantyla
  */
 public class Tile {

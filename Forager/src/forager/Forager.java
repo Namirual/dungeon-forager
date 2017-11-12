@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 /**
- *
+ * The main algorithm class.
  * @author lmantyla
  */
 public class Forager {
@@ -20,6 +20,7 @@ public class Forager {
         this.dungeon = dungeon;
     }
 
+    // Current search algorithm with a BFS base.
     public Step searchPath(Tile startTile, Tile goalTile, int energy) {
         LinkedList<Step> availableSteps = new LinkedList<>();
 

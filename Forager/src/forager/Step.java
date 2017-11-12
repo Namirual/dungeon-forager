@@ -6,7 +6,7 @@
 package forager;
 
 /**
- *
+ * A state class that contains information about each step.
  * @author lmantyla
  */
 public class Step {

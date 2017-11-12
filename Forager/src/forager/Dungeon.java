@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- *
+ * Dungeon is used to store the map and to generate node information. 
  * @author lmantyla
  */
 public class Dungeon {
@@ -23,7 +23,8 @@ public class Dungeon {
             map[val] = stringMap[val].toCharArray();
         }
     }
-        
+    
+    // Selects tiles adjacent to a particular tile.
     public List<Tile> getAdjacentTiles(int x, int y) {
         List<Tile> adjacentTiles = new ArrayList<>();
 
@@ -35,6 +36,7 @@ public class Dungeon {
         return adjacentTiles;
     }
 
+    //Generates tile information from the map.
     public Tile getTile(int x, int y) {
         if (!isWithinMap(x, y)) {
             return null;
@@ -48,6 +50,7 @@ public class Dungeon {
         }
     }
 
+    //Checks if coordinates are within bounds.
     public boolean isWithinMap(int x, int y) {
         if (x < 0 || y < 0 || x >= map[0].length || y >= map.length) {
             return false;

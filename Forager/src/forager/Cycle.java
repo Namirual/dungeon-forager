@@ -6,7 +6,7 @@
 package forager;
 
 /**
- *
+ * Cycle stores information about tiles that have been visited.
  * @author lmantyla
  */
 public class Cycle {
