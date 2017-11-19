@@ -1,4 +1,4 @@
-#Viikkoraportti 2
+# Viikkoraportti 2
 
 Ensimmäisellä viikolla tekemäni suunnittelutyö oli suhteellisen laajaa, joten toisella viikolla oli helppo ryhtyä toteuttamaan esittämääni algoritmia.
 
