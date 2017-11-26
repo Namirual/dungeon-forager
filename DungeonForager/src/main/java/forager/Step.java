@@ -33,7 +33,7 @@ public class Step {
         this.tile = tile;
         this.previousStep = previousStep;
         this.cycle = cycle;
-        this.energyLeft = previousStep.energyLeft - tile.getEnergyCost();
+        this.energyLeft = previousStep.energyLeft - tile.getSpecialCost();
         this.timeSpent = previousStep.timeSpent + tile.getTimeCost();
     }
 
@@ -46,13 +46,22 @@ public class Step {
         this.energyLeft = previousStep.energyLeft - defaultValue;
         this.timeSpent = previousStep.timeSpent + defaultValue;
     }
-    
+
     public Step(Tile tile, Step previousStep, Cycle cycle, int energyLeft, int timeSpent) {
         this.tile = tile;
         this.previousStep = previousStep;
         this.cycle = cycle;
         this.energyLeft = energyLeft;
         this.timeSpent = timeSpent;
+    }
+
+    // Used for the Forager variation with steps
+    public Step(Line line, Step previousStep, Cycle cycle) {
+        this.tile = line.getTargetTile();
+        this.previousStep = previousStep;
+        this.cycle = cycle;
+        this.energyLeft = previousStep.getEnergyLeft() - line.getEnergyCost() - line.getTargetTile().getSpecialCost();
+        this.timeSpent = previousStep.getTimeSpent() + line.getTimeCost();
     }
 
     public Tile getTile() {
@@ -71,7 +80,7 @@ public class Step {
         return energyLeft;
     }
 
-    public int getTimeSpent(int timeSpent) {
+    public int getTimeSpent() {
         return timeSpent;
     }
 }

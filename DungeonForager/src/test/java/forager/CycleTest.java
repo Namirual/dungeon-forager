@@ -27,14 +27,24 @@ public class CycleTest {
     @Before
 
     public void setUp() {
-        tileA = new Tile(1, 1, -1);
-        tileB = new Tile(1, 2, -1);
-        tileC = new Tile(2, 2, -1);
+        tileA = new Tile(1, 1, -1, -1);
+        tileB = new Tile(1, 2, -1, -1);
+        tileC = new Tile(2, 2, -1, -1);
 
-        cycleA = new Cycle(null, tileA, new boolean[3][3]);
-        cycleB = new Cycle(cycleA, tileB, new boolean[3][3]);
-        cycleC = new Cycle(cycleB, tileC, new boolean[3][3]);
-
+        String[] stringMap = stringMap = new String[]{
+        "#############",
+        "#..E#.......#",
+        "#..#..#..#..#",
+        "#........##.#",
+        "#........E..#",
+        "#############"
+    };
+        
+        Dungeon dungeon = new Dungeon(stringMap);
+        
+        cycleA = new Cycle(null, tileA, dungeon);
+        cycleB = new Cycle(cycleA, tileB, dungeon);
+        cycleC = new Cycle(cycleB, tileC, dungeon);
     }
 
     @Test
@@ -46,7 +56,7 @@ public class CycleTest {
 
     @Test
     public void doesNotRememberUnvisitedSpecialTiles() {
-        Tile tileD = new Tile(2, 1, -1);
+        Tile tileD = new Tile(2, 1, -1, -1);
         
         assertEquals(cycleC.isSpecialUsed(tileD), false);
     }

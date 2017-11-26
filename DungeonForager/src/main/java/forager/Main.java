@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package forager;
+import forager.creator.*;
 
 /**
  *
@@ -19,22 +20,28 @@ public class Main {
     public static void main(String[] args) {
         String[] stringMap = new String[]{
             "#############",
-            "#..EO......G#",
-            "#..#..#..#..#",
+            "#..EO...G...#",
+            "#..#######..#",
             "#........##.#",
             "#S...#..E...#",
             "#############"
         };
-
-        Dungeon dungeon = new Dungeon(stringMap);
-        Forager forager = new Forager(dungeon);
+       
+        DungeonCreator creator = new DungeonCreator(35, 35, 5);
+        //Dungeon dungeon = new Dungeon(stringMap);
+        Dungeon dungeon = new Dungeon(creator.createDungon());
+                
+        PhasedForager forager = new PhasedForager(dungeon);
 
         //Pathfinding is initiated. A tile with 'S' is given as start, 'G' as goal.
         Step step = forager.searchPath(dungeon.findTileWithChar('S'),
-                dungeon.findTileWithChar('G'), 5);
-
+                dungeon.findTileWithChar('G'), 6);
+        
         //Each step of the selected path is printed from end to beginning.
         //Visited special icons are rendered as normal floor dots.
+        
+        System.out.println("Travel time: " + step.getTimeSpent());
+        
         while (step != null) {
             for (int yval = 0; yval < dungeon.ySize(); yval++) {
                 for (int xval = 0; xval < dungeon.xSize(); xval++) {
@@ -48,7 +55,7 @@ public class Main {
                 }
                 System.out.println("");
             }
-
+            System.out.println("");
             step = step.getPreviousStep();
         }
     }

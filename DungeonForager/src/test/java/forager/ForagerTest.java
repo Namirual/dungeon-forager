@@ -41,27 +41,27 @@ public class ForagerTest {
         dungeon = new Dungeon(stringMap);
         forager = new Forager(dungeon);
 
-        tileA = new Tile(1, 1, 1);
-        tileB = new Tile(2, 1, -5);
-        tileC = new Tile(2, 1, -5);
+        tileA = new Tile(1, 1, 1, 0);
+        tileB = new Tile(2, 1, 1, -5);
+        tileC = new Tile(2, 1, 1, -5);
 
-        cycleA = new Cycle(null, tileA, new boolean[3][3]);
-        cycleB = new Cycle(cycleA, tileB, new boolean[3][3]);
+        cycleA = new Cycle(null, tileA, dungeon);
+        cycleB = new Cycle(cycleA, tileB, dungeon);
 
     }
 
     @Test
-    public void newStepIsNotTakenIfResultIsZeroEnergy() {
-        Step step = new Step(tileA, null, cycleA, 1, 0);
+    public void newStepIsNotTakenIfAtZeroEnergy() {
+        Step step = new Step(tileA, null, cycleA, 0, 0);
 
         assertNull(forager.handleNewStep(tileA, step));
     }
 
     @Test
     public void newStepIsTakenWhenJustEnoughEnergy() {
-        Step step = new Step(tileA, null, cycleA, 2, 0);
+        Step step = new Step(tileA, null, cycleA, 1, 0);
 
-        assertEquals(forager.handleNewStep(tileA, step).getEnergyLeft(), 1);
+        assertEquals(forager.handleNewStep(tileA, step).getEnergyLeft(), 0);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class ForagerTest {
 
     @Test
     public void newCycleNotCreatedWhenSpecialTileAlreadyVisited() {
-        Cycle cycleC = new Cycle(cycleB, tileC, new boolean[3][3]);
+        Cycle cycleC = new Cycle(cycleB, tileC, dungeon);
 
         Step step = new Step(tileC, null, cycleC, 5, 0);
         Step newStep = forager.handleNewStep(tileB, step);
@@ -94,7 +94,7 @@ public class ForagerTest {
 
     @Test
     public void energyChangeIsDefaultAmountWhenSpecialTileAlreadyVisited() {
-        Cycle cycleC = new Cycle(cycleB, tileC, new boolean[3][3]);
+        Cycle cycleC = new Cycle(cycleB, tileC, dungeon);
 
         Step step = new Step(tileC, null, cycleC, 5, 0);
         Step newStep = forager.handleNewStep(tileB, step);

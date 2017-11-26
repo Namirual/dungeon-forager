@@ -16,12 +16,29 @@ import java.util.ArrayList;
 public class Dungeon {
 
     private char[][] map;
+    private Tile[][] dungeonTiles;
+
+    public Dungeon(char[][] map) {
+        this.map = map;
+        createTileList();
+    }
 
     public Dungeon(String[] stringMap) {
         map = new char[stringMap.length][stringMap[0].toCharArray().length];
 
         for (int val = 0; val < stringMap.length; val++) {
             map[val] = stringMap[val].toCharArray();
+        }
+        createTileList();
+    }
+
+    public void createTileList() {
+        dungeonTiles = new Tile[ySize()][xSize()];
+
+        for (int yval = 0; yval < ySize(); yval++) {
+            for (int xval = 0; xval < xSize(); xval++) {
+                dungeonTiles[yval][xval] = createTile(xval, yval);
+            }
         }
     }
 
@@ -41,24 +58,31 @@ public class Dungeon {
                 adjacentTiles.remove(val);
             }
         }
-
         return adjacentTiles;
     }
 
-    //Generates tile information from the map.
     public Tile getTile(int x, int y) {
+        if (isWithinMap(x, y)) {
+            return dungeonTiles[y][x];
+        }
+        return null;
+    }
+
+    //Generates tile information from the map.
+    public Tile createTile(int x, int y) {
         if (!isWithinMap(x, y)) {
             return null;
         }
         if (map[y][x] == '#') {
             return null;
         } else if (map[y][x] == 'E') {
-            return new Tile(x, y, -10);
+            return new Tile(x, y, 1, -10);
         } else if (map[y][x] == 'O') {
-            return new Tile(x, y, 5);
-        }
-        else {
-            return new Tile(x, y, 1);
+            return new Tile(x, y, 1, 5);
+        } else if (map[y][x] == 'G') {
+            return new Tile(x, y, 1, -1);
+        } else {
+            return new Tile(x, y, 1, 0);
         }
     }
 
