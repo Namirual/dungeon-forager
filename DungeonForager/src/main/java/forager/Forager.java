@@ -31,7 +31,7 @@ public class Forager {
 
         Cycle cycle = new Cycle(null, startTile, dungeon);
 
-        Step startState = new Step(startTile, null, cycle, energy, 30);
+        Step startState = new Step(startTile, null, cycle, energy, 0);
 
         for (Tile tile : dungeon.getAdjacentTiles(startTile.getX(), startTile.getY())) {
             availableSteps.add(new Step(tile, startState));
@@ -67,10 +67,9 @@ public class Forager {
         int energyLeft = currentStep.getEnergyLeft() - tile.getEnergyCost();
         if (energyLeft >= 0) {
             currentStep.getCycle().setVisited(tile.getX(), tile.getY());
-
             if (tile.getSpecialCost() == 0) {
                 return new Step(tile, currentStep);
-            } else if (currentStep.getCycle().isSpecialUsed(tile)) {
+            } else if (currentStep.getCycle().isSpecialSpent(tile)) {
                 return new Step(tile, currentStep);
             } else {
                 Cycle newCycle = new Cycle(currentStep.getCycle(), tile, dungeon);

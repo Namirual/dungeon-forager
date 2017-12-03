@@ -17,6 +17,7 @@ public class Tile {
 
     private int x;
     private int y;
+    private int specialNum;
 
     private int energyCost;
     private int specialCost;
@@ -29,7 +30,8 @@ public class Tile {
         this.energyCost = energyCost;
         this.specialCost = specialCost;
         this.timeCost = 1;
-        //this.neighbors = new ArrayList<>();
+
+        this.specialNum = 0;
     }
 
     public Tile(int x, int y, int energyCost, int specialCost, int timeCost) {
@@ -38,7 +40,8 @@ public class Tile {
         this.energyCost = energyCost;
         this.specialCost = specialCost;
         this.timeCost = timeCost;
-        //this.neighbors = new ArrayList<>();
+        
+        this.specialNum = 0;
     }
 
     public int getX() {
@@ -49,6 +52,14 @@ public class Tile {
         return y;
     }
 
+    public int getSpecialNum() {
+        return specialNum;
+    }
+
+    public void setSpecialNum(int specialNum) {
+        this.specialNum = specialNum;
+    }
+    
     public int getEnergyCost() {
         return energyCost;
     }

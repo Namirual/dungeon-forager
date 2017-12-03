@@ -23,9 +23,11 @@ public class AStarStepComparator implements Comparator<Step> {
     public double heuristic(Tile currentTile) {
         int x = Math.abs(this.goalTile.getX() - currentTile.getX());
         int y = Math.abs(this.goalTile.getY() - currentTile.getY());
+       
         double distance = Math.sqrt((x*x) + (y*y));
-                
+        //return x + y;        
         return (double) distance;
+        //return 0;
     }
 
     /**
@@ -40,6 +42,11 @@ public class AStarStepComparator implements Comparator<Step> {
         double val1 = heuristic(t1.getTile()) + t1.getTimeSpent();
         double val2 = heuristic(t2.getTile()) + t2.getTimeSpent();
         
-        return (int) (val1 - val2);
+        if (val1 - val2 > 0) {
+            return 1;
+        } else if (val1 - val2 < 0) {
+            return -1;
+        }
+        return 0;
     }
 }

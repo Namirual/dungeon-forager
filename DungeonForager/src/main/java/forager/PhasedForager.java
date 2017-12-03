@@ -5,13 +5,15 @@
  */
 package forager;
 
+import forager.structures.VisitTree;
+import forager.structures.MyMinHeap;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
 /**
- * The main algorithm class.
+ * A*-based search algorithm that operates in two phases.
  *
  * @author lmantyla
  */
@@ -19,32 +21,41 @@ public class PhasedForager {
 
     Dungeon dungeon;
     int cycles;
+    int reuses;
+    int highestNumberOfCycles = 0;
+    VisitTree visitTree;
 
     public PhasedForager(Dungeon dungeon) {
         this.dungeon = dungeon;
         cycles = 1;
     }
 
-    // Current search algorithm that calculates between special tiles.
+    // Second phase search algorithm that calculates between special tiles.
     public Step searchPath(Tile startTile, Tile goalTile, int energy) {
-        PriorityQueue<Step> availableSteps = new PriorityQueue<>(new AStarStepComparator(goalTile));
+        //PriorityQueue<Step> availableSteps = new PriorityQueue<>(new AStarStepComparator(goalTile));
+        MyMinHeap<Step> availableSteps = new MyMinHeap<Step>(new AStarStepComparator(goalTile));
 
-        createNeigborLists(15, startTile, goalTile);
+        createNeigborLists(20, startTile, goalTile);
 
-        Cycle cycle = new Cycle(null, startTile, dungeon);
+        VisitMap visitMap = new VisitMap(dungeon);
+        visitTree = new VisitTree(dungeon.getSpecialTiles().size());
+        visitTree.addVisitMap(visitMap);
+
+        Cycle cycle = new Cycle(null, startTile, visitMap);
 
         Step startState = new Step(startTile, null, cycle, energy, 0);
 
         availableSteps.add(startState);
-        
+
         while (availableSteps.size() > 0) {
             Step currentStep = availableSteps.poll();
-            
+
             currentStep.getCycle().setVisited(currentStep.getTile().getX(), currentStep.getTile().getY());
 
             if (currentStep.getTile().equals(goalTile)) {
                 System.out.print("available steps: " + availableSteps.size() + " cycles: " + cycles);
-                System.out.println(" energy " + currentStep.getEnergyLeft());
+                System.out.println(" Reuses: " + reuses);
+                System.out.println(" energy left: " + currentStep.getEnergyLeft());
                 return currentStep;
             }
 
@@ -57,7 +68,7 @@ public class PhasedForager {
         }
         return null;
     }
-    
+
     // Checks if a step can be reached with energy and if a new cycle is needed.
     public Step handleNewStep(Line line, Step currentStep) {
         Tile tile = line.getTargetTile();
@@ -66,17 +77,61 @@ public class PhasedForager {
             currentStep.getCycle().setVisited(tile.getX(), tile.getY());
 
             if (tile.getSpecialCost() == 0) {
-                //return new Step(tile, currentStep);
                 return null;
-            } else if (currentStep.getCycle().isSpecialUsed(tile)) {
+            } else if (currentStep.getCycle().isSpecialSpent(tile)) {
                 return new Step(tile, currentStep, line.getTimeCost());
             } else {
-                Cycle newCycle = new Cycle(currentStep.getCycle(), tile, dungeon);
-                cycles++;
-                return new Step(line, currentStep, newCycle);
+                Cycle newCycle = createNewCycle(currentStep, tile);
+                if (newCycle != null) {
+                    return new Step(line, currentStep, newCycle);
+                }
             }
         }
         return null;
+    }
+
+    // Creates a new cycle with either the old visit map or the new one.
+    public Cycle createNewCycle(Step currentStep, Tile tile) {
+        VisitMap visitMap = new VisitMap(currentStep.getCycle().getVisitMap(), tile);
+
+        Cycle newCycle;
+
+        VisitMap existingMap = visitTree.findVisitMap(visitMap);
+
+        if (existingMap != null) {
+            if (existingMap.isVisited(tile.getX(), tile.getY())) {
+                return null;
+            }
+
+            /*for (int val = 0; val < visitMap.getSpecialVisited().length; val++) {
+                if (visitMap.getSpecialVisited()[val]) {
+                    System.out.print("1");
+                } else {
+                    System.out.print("0");
+                }
+            }
+            for (int val = 0; val < visitMap.getSpecialVisited().length; val++) {
+                        if (currentStep.getCycle().getVisits().getSpecialVisited()[val]) {
+                            System.out.print("1");
+                        } else {
+                            System.out.print("0");
+                        }
+                    }
+            System.out.println("");*/
+
+            newCycle = new Cycle(currentStep.getCycle(), tile, existingMap);
+            reuses++;
+        } else {
+            newCycle = new Cycle(currentStep.getCycle(), tile, visitMap);
+            visitTree.addVisitMap(visitMap);
+            cycles++;
+
+            if (visitMap.specialTilesVisited > highestNumberOfCycles) {
+                System.out.println("Cycle depth: " + visitMap.specialTilesVisited);
+                highestNumberOfCycles = visitMap.specialTilesVisited;
+            }
+        }
+        return newCycle;
     }
 
     public void createNeigborLists(int maxEnergy, Tile startTile, Tile goalTile) {
@@ -85,7 +140,7 @@ public class PhasedForager {
                 Tile tile = dungeon.getTile(xval, yval);
                 if (tile != null && tile.getSpecialCost() != 0) {
                     tile.setNeighbors(findAccessibleSpecialTiles(tile, maxEnergy));
-                    
+
                     /*System.out.println(tile);
                     for (Line neightile : tile.getNeighbors()) {
                         System.out.print(neightile);
@@ -95,9 +150,7 @@ public class PhasedForager {
             }
         }
         startTile.setNeighbors(findAccessibleSpecialTiles(startTile, maxEnergy));
-        /*for (Tile neightile : startTile.getNeighbors()) {
-            System.out.print(neightile + " " + neightile.getSpecialCost() + ",  ");
-        }*/
+
         goalTile.setNeighbors(findAccessibleSpecialTiles(goalTile, maxEnergy));
     }
 
@@ -108,7 +161,7 @@ public class PhasedForager {
 
         Cycle cycle = new Cycle(null, startTile, dungeon);
         cycle.setVisited(startTile.getX(), startTile.getY());
-        
+
         Step startState = new Step(startTile, null, cycle, maxEnergy, 0);
 
         availableSteps.add(new Step(startTile, startState));
@@ -124,7 +177,7 @@ public class PhasedForager {
                 if (currentStep.getEnergyLeft() <= 0) {
                     continue;
                 }
-                
+
                 currentStep.getCycle().setVisited(tile.getX(), tile.getY());
 
                 if (tile.getSpecialCost() == 0) {

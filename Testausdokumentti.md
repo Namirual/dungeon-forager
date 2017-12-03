@@ -2,7 +2,9 @@
 
 # Testausdokumentti
 
-Ohjelmaan on toteutettu JUnit-testejä, jotka kuitenkin tällä hetkellä koostuvat pääosin yksikkötesteistä, joilla varmistetaan luokkien toiminnan oikeellisuus.
+Ohjelmaan on toteutettu JUnit-testejä, jotka kuitenkin tällä hetkellä koostuvat pääosin yksikkötesteistä, joilla varmistetaan luokkien toiminnan oikeellisuus. Suorituskykytestausta varten ei toistaiseksi ole tehty automatisoituja testejä.
+
+### Suorituskykytestaus
 
 Ohjelman suorituskyvyn testaaminen tuli kuitenkin mahdolliseksi, kun toteutin ohjelmaan satunnaisen luolastongeneroinnin. Satunnainen generoinnissa luolastoon luodaan tyhjiä ruutuja, seiniä ja energiasolmuja (joita on 5%), sekä valmis reitti, jota pitkin perille pääsee parhaassa mahdollisessa ajassa.
 
@@ -10,4 +12,8 @@ Hiukan yllättävää oli, että jo pienillä luolastoilla alkuperäinen BFS-poh
 
 Kaksivaiheinen haku säästää jonkin verran muistia, ja sen ansiosta haut ovat mahdollisia jopa 45 x 45 luolastoissa (noin 100 energiasolmua). Varsinainen haaste ei sinänsä ole itse luolaston koko, vaan energiasolmujen määrä ja keskinäinen sijoittuminen. Kun energiasolmujen määrä on yli 100, alkaa syklien määrä jälleen kasvaa niin, että muisti alkaa jälleen loppua.
 
-Kaikki onnistuneet haut ratkeavat sekunneissa, joten muistin loppuminen on haun keskeinen rajoittava tekijä.
+Kaksivaiheinen haku käyttäen Manhattan-etäisyyttä pystyy ratkaisemaan hyvinkin suuria satunnaisesti generoituja luolastoja, mutta tämä johtuu osin siitä, että tällä hetkellä satunnaisesti generoiduissa luolastoissa on aina olemassa suorin mahdollinen reitti.
+
+Oman minimikeon toteuttaminen oli sikäli hyödyllistä, että nykyisessä toteutuksessa voin määritellä rajan sille, kuinka pitkälle kekoa voi täyttää; tämä on auttanut diagnosoimaan haun toimintaa erikokoisilla kartoilla. Koska kaksivaiheisen haun uusi muoto on hieman parempi muistinkäytön osalta, vaikuttaa siltä, että algoritmille pahin ongelma on kekomuistin loppuminen. 
+
+Onnistuneet haut ratkeavat edelleen sekunneissa.

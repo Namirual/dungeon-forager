@@ -6,7 +6,7 @@
 package forager;
 
 /**
- * Cycle stores information about tiles that have been visited.
+ * Cycle contains a link to a VisitMap.
  *
  * @author lmantyla
  */
@@ -14,24 +14,30 @@ public class Cycle {
 
     private Cycle previousCycle;
     private Tile startingTile;
-    private boolean[][] visited;
+    private VisitMap visitMap;
 
     public Cycle(Cycle previousCycle, Tile startingTile, Dungeon dungeon) {
         this.previousCycle = previousCycle;
         this.startingTile = startingTile;
-        this.visited = new boolean[dungeon.ySize()][dungeon.xSize()];
+        this.visitMap = new VisitMap(dungeon);
+    }
+
+    public Cycle(Cycle previousCycle, Tile startingTile, VisitMap visitMap) {
+        this.previousCycle = previousCycle;
+        this.startingTile = startingTile;
+        this.visitMap = visitMap;
     }
 
     public boolean isVisited(int x, int y) {
-        return visited[y][x];
+        return visitMap.isVisited(x, y);
     }
 
     public void setVisited(int x, int y) {
-        visited[y][x] = true;
+        visitMap.setVisited(x, y);
     }
 
     // Check whether a special tile has been visited and spent during this or previous cycle.
-    public boolean isSpecialUsed(Tile tile) {
+    public boolean isSpecialSpent(Tile tile) {
         Cycle cycle = this;
         while (cycle != null) {
             if (cycle.getStartingTile().equals(tile)) {
@@ -48,5 +54,9 @@ public class Cycle {
 
     public Cycle getPreviousCycle() {
         return previousCycle;
+    }
+
+    public VisitMap getVisitMap() {
+        return visitMap;
     }
 }

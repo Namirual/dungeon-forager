@@ -49,16 +49,16 @@ public class CycleTest {
 
     @Test
     public void specialTilesVisitedInPreviousCyclesAreRemembered() {
-        cycleC.isSpecialUsed(tileA);
+        cycleC.isSpecialSpent(tileA);
 
-        assertEquals(cycleC.isSpecialUsed(tileA), true);
+        assertEquals(cycleC.isSpecialSpent(tileA), true);
     }
 
     @Test
     public void doesNotRememberUnvisitedSpecialTiles() {
         Tile tileD = new Tile(2, 1, -1, -1);
         
-        assertEquals(cycleC.isSpecialUsed(tileD), false);
+        assertEquals(cycleC.isSpecialSpent(tileD), false);
     }
 
 }

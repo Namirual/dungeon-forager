@@ -17,9 +17,12 @@ public class Dungeon {
 
     private char[][] map;
     private Tile[][] dungeonTiles;
+    private List<Tile> specialTiles;
 
     public Dungeon(char[][] map) {
         this.map = map;
+
+        specialTiles = new ArrayList<Tile>();
         createTileList();
     }
 
@@ -29,15 +32,25 @@ public class Dungeon {
         for (int val = 0; val < stringMap.length; val++) {
             map[val] = stringMap[val].toCharArray();
         }
+        specialTiles = new ArrayList<Tile>();
+
         createTileList();
     }
 
     public void createTileList() {
         dungeonTiles = new Tile[ySize()][xSize()];
 
+        int specialNum = 0;
+
         for (int yval = 0; yval < ySize(); yval++) {
             for (int xval = 0; xval < xSize(); xval++) {
-                dungeonTiles[yval][xval] = createTile(xval, yval);
+                Tile tile = createTile(xval, yval);
+                dungeonTiles[yval][xval] = tile;
+                if (tile != null && tile.getSpecialCost() != 0) {
+                    tile.setSpecialNum(specialNum);
+                    specialTiles.add(tile);
+                    specialNum++;
+                }
             }
         }
     }
@@ -105,6 +118,10 @@ public class Dungeon {
 
     public char getChar(int x, int y) {
         return map[y][x];
+    }
+
+    public List<Tile> getSpecialTiles() {
+        return specialTiles;
     }
 
     // Finds first example of a particular character in the map.
