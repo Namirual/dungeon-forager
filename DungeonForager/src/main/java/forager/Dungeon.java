@@ -5,8 +5,8 @@
  */
 package forager;
 
+import forager.structures.MyArrayList;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Dungeon is used to store the map and to generate node information.
@@ -17,12 +17,12 @@ public class Dungeon {
 
     private char[][] map;
     private Tile[][] dungeonTiles;
-    private List<Tile> specialTiles;
+    private MyArrayList<Tile> specialTiles;
 
     public Dungeon(char[][] map) {
         this.map = map;
 
-        specialTiles = new ArrayList<Tile>();
+        specialTiles = new MyArrayList<Tile>();
         createTileList();
     }
 
@@ -32,7 +32,7 @@ public class Dungeon {
         for (int val = 0; val < stringMap.length; val++) {
             map[val] = stringMap[val].toCharArray();
         }
-        specialTiles = new ArrayList<Tile>();
+        specialTiles = new MyArrayList<Tile>();
 
         createTileList();
     }
@@ -56,8 +56,8 @@ public class Dungeon {
     }
 
     // Selects tiles adjacent to a particular tile.
-    public List<Tile> getAdjacentTiles(int x, int y) {
-        List<Tile> adjacentTiles = new ArrayList<>();
+    public MyArrayList<Tile> getAdjacentTiles(int x, int y) {
+        MyArrayList<Tile> adjacentTiles = new MyArrayList<>();
 
         adjacentTiles.add(getTile(x + 1, y));
         adjacentTiles.add(getTile(x - 1, y));
@@ -94,6 +94,8 @@ public class Dungeon {
             return new Tile(x, y, 1, 5);
         } else if (map[y][x] == 'G') {
             return new Tile(x, y, 1, -1);
+        } else if (map[y][x] == ' ') {
+            return new Tile(x, y, 2, 0, 2);
         } else {
             return new Tile(x, y, 1, 0);
         }
@@ -120,7 +122,7 @@ public class Dungeon {
         return map[y][x];
     }
 
-    public List<Tile> getSpecialTiles() {
+    public MyArrayList<Tile> getSpecialTiles() {
         return specialTiles;
     }
 

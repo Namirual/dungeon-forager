@@ -36,6 +36,18 @@ public class ForagerTest {
         "#############"
     };
 
+    String[] stringMap2 = new String[]{
+        "#######",
+        "#     #",
+        "#######"
+    };
+
+    String[] stringMap3 = new String[]{
+        "#######",
+        "#E    #",
+        "#######"
+    };
+
     @Before
     public void setUp() {
         dungeon = new Dungeon(stringMap);
@@ -112,4 +124,32 @@ public class ForagerTest {
     public void returnsNullWhenNoPathIsFound() {
         assertNull(forager.searchPath(dungeon.getTile(1, 4), dungeon.getTile(9, 1), 1));
     }
+
+    @Test
+    public void foragerManagesDifferentTimeWeights() {
+        Dungeon dungeon2 = new Dungeon(stringMap2);
+        forager = new Forager(dungeon2);
+
+        Step step = forager.searchPath(dungeon2.getTile(1, 1), dungeon2.getTile(5, 1), 20);
+        assertEquals(step.getTimeSpent(), 8);
+    }
+
+    @Test
+    public void foragerManagesDifferentEnergyWeights() {
+        Dungeon dungeon2 = new Dungeon(stringMap2);
+        forager = new Forager(dungeon2);
+
+        Step step = forager.searchPath(dungeon2.getTile(1, 1), dungeon2.getTile(5, 1), 20);
+        assertEquals(step.getEnergyLeft(), 12);
+    }
+
+    @Test
+    public void foragerManagesBackTracking() {
+        Dungeon dungeon3 = new Dungeon(stringMap3);
+        forager = new Forager(dungeon3);
+
+        Step step = forager.searchPath(dungeon3.getTile(2, 1), dungeon3.getTile(5, 1), 1);
+        assertEquals(step.getEnergyLeft(), 3);
+    }
+
 }

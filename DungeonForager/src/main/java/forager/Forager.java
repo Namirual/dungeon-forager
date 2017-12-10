@@ -5,6 +5,7 @@
  */
 package forager;
 
+import forager.structures.MyMinHeap;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,15 +28,17 @@ public class Forager {
 
     // Current search algorithm with a BFS base.
     public Step searchPath(Tile startTile, Tile goalTile, int energy) {
-        LinkedList<Step> availableSteps = new LinkedList<>();
+        //LinkedList<Step> availableSteps = new LinkedList<>();
+        MyMinHeap<Step> availableSteps = new MyMinHeap<Step>(new AStarStepComparator(goalTile, Heuristic.Dijkstra));
 
         Cycle cycle = new Cycle(null, startTile, dungeon);
 
         Step startState = new Step(startTile, null, cycle, energy, 0);
 
-        for (Tile tile : dungeon.getAdjacentTiles(startTile.getX(), startTile.getY())) {
+        /*for (Tile tile : dungeon.getAdjacentTiles(startTile.getX(), startTile.getY())) {
             availableSteps.add(new Step(tile, startState));
-        }
+        }*/
+        availableSteps.add(startState);
 
         while (availableSteps.size() > 0) {
             Step currentStep = availableSteps.poll();
@@ -43,8 +46,8 @@ public class Forager {
             currentStep.getCycle().setVisited(currentStep.getTile().getX(), currentStep.getTile().getY());
 
             if (currentStep.getTile().equals(goalTile)) {
-                System.out.print("available steps: " + availableSteps.size() + " cycles: " + cycles);
-                System.out.println(" energy " + currentStep.getEnergyLeft());
+                /*System.out.print("available steps: " + availableSteps.size() + " cycles: " + cycles);
+                System.out.println(" energy " + currentStep.getEnergyLeft());*/
                 return currentStep;
             }
 
@@ -60,7 +63,7 @@ public class Forager {
         }
         return null;
     }
-    
+
     // Checks if a step can be reached with energy and if a new cycle is needed.
     public Step handleNewStep(Tile tile, Step currentStep) {
 

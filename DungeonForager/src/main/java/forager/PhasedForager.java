@@ -35,7 +35,7 @@ public class PhasedForager {
         //PriorityQueue<Step> availableSteps = new PriorityQueue<>(new AStarStepComparator(goalTile));
         MyMinHeap<Step> availableSteps = new MyMinHeap<Step>(new AStarStepComparator(goalTile));
 
-        createNeigborLists(20, startTile, goalTile);
+        createNeigborLists(30, startTile, goalTile);
 
         VisitMap visitMap = new VisitMap(dungeon);
         visitTree = new VisitTree(dungeon.getSpecialTiles().size());
@@ -118,7 +118,6 @@ public class PhasedForager {
                         }
                     }
             System.out.println("");*/
-
             newCycle = new Cycle(currentStep.getCycle(), tile, existingMap);
             reuses++;
         } else {
@@ -156,7 +155,9 @@ public class PhasedForager {
 
     // Calculates all possible routes from each special tile to other special tiles.
     public List<Line> findAccessibleSpecialTiles(Tile startTile, int maxEnergy) {
-        LinkedList<Step> availableSteps = new LinkedList<>();
+        //LinkedList<Step> availableSteps = new LinkedList<>();
+        MyMinHeap<Step> availableSteps = new MyMinHeap<Step>(new AStarStepComparator(startTile, Heuristic.Dijkstra));
+
         List<Line> lines = new ArrayList<Line>();
 
         Cycle cycle = new Cycle(null, startTile, dungeon);

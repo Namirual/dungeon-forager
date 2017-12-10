@@ -5,6 +5,7 @@
  */
 package forager;
 
+import forager.structures.MyArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class DungeonTest {
     String[] testStringMap = new String[]{
         "######",
         "#..E.#",
-        "#....#",
+        "#.. .#",
         "#...##",
         "#..#.#",
         "######"
@@ -52,7 +53,7 @@ public class DungeonTest {
         dungeon.isWithinMap(6, 6);
         assertFalse(dungeon.isWithinMap(6, 6));
     }
-    
+
     @Test
     public void OutOfBoundsTileNotReturned() {
         assertEquals(dungeon.getTile(6, 6), null);
@@ -60,13 +61,25 @@ public class DungeonTest {
 
     @Test
     public void FourAdjacentTilesReturned() {
-        List<Tile> tiles = dungeon.getAdjacentTiles(2, 2);
+        MyArrayList<Tile> tiles = dungeon.getAdjacentTiles(2, 2);
         assertEquals(tiles.size(), 4);
     }
 
     @Test
+    public void FloorTileWithHigherCostRecognised() {
+        MyArrayList<Tile> tiles = dungeon.getAdjacentTiles(2, 2);
+        boolean highCostExists = false;
+        for (Tile tile : tiles) {
+            if (tile.getTimeCost() == 2) {
+                highCostExists = true;
+            }
+        }
+        assertTrue(highCostExists);
+    }
+
+    @Test
     public void EmptyListWhenSurroundedByWalls() {
-        List<Tile> tiles = dungeon.getAdjacentTiles(4, 4);
+        MyArrayList<Tile> tiles = dungeon.getAdjacentTiles(4, 4);
         assertEquals(tiles.size(), 0);
     }
 

@@ -6,6 +6,7 @@
 package forager;
 
 import forager.creator.*;
+import java.util.Stack;
 
 /**
  *
@@ -21,7 +22,7 @@ public class Main {
     public static void main(String[] args) {
         String[] stringMap = new String[]{
             "#############",
-            "#..EO...G...#",
+            "#..EO.....G.#",
             "#..#######..#",
             "#........##.#",
             "#S...#..E...#",
@@ -121,23 +122,80 @@ public class Main {
             "##.......#.......#....##...#......#...#.#.#..#...#"
         };
 
-        DungeonCreator creator = new DungeonCreator(40, 40, 5);
+        DungeonCreator creator = new DungeonCreator(60, 60, 5);
 
-        //Dungeon dungeon = new Dungeon(stringMap4);
+        //Dungeon dungeon = new Dungeon(stringMap);
         Dungeon dungeon = new Dungeon(creator.createDungon());
 
         PhasedForager forager = new PhasedForager(dungeon);
-        //Forager forager = new Forager(dungeon);
+        Forager simpleForager = new Forager(dungeon);
 
         //Pathfinding is initiated. A tile with 'S' is given as start, 'G' as goal.
         Step step = forager.searchPath(dungeon.findTileWithChar('S'),
                 dungeon.findTileWithChar('G'), 6);
 
-        //Each step of the selected path is printed from end to beginning.
-        //Visited special icons are rendered as normal floor dots.
+        if (step == null) {
+            System.out.println("No path found!");
+            return;
+        }
+
         System.out.println("Travel time: " + step.getTimeSpent());
 
-        while (step != null) {
+        //We represent the path taken by putting all steps in a stack.
+        //Then we calculate the in-between steps and insert them to a matrix.
+        int[][] stepList = new int[dungeon.ySize()][dungeon.xSize()];
+
+        java.util.Stack<Step> allSteps = new Stack<Step>();
+
+        Step stackStep = step;
+
+        while (stackStep != null) {
+            allSteps.add(stackStep);
+            stackStep = stackStep.getPreviousStep();
+        }
+
+        while (!allSteps.isEmpty()) {
+            Step currentStep = allSteps.pop();
+
+            if (allSteps.isEmpty()) {
+                break;
+            }
+            Step nextStep = allSteps.peek();
+            Step betweenStep = simpleForager.searchPath(currentStep.getTile(), nextStep.getTile(), 30);
+            betweenStep = betweenStep.getPreviousStep();
+
+            while (betweenStep != null) {
+                stepList[betweenStep.getTile().getY()][betweenStep.getTile().getX()]++;
+                betweenStep = betweenStep.getPreviousStep();
+            }
+        }
+
+        // We print the dungeon once.
+        for (int yval = 0; yval < dungeon.ySize(); yval++) {
+            for (int xval = 0; xval < dungeon.xSize(); xval++) {
+                System.out.print("" + dungeon.getChar(xval, yval));
+            }
+            System.out.println("");
+        }
+        
+        System.out.println("\n");
+
+        // We print the dungeon again, showing number of visits on each tile on best path.
+        for (int yval = 0; yval < dungeon.ySize(); yval++) {
+            for (int xval = 0; xval < dungeon.xSize(); xval++) {
+                if (stepList[yval][xval] > 0) {
+                    System.out.print(stepList[yval][xval]);
+                } else {
+                    System.out.print("" + dungeon.getChar(xval, yval));
+                }
+            }
+            System.out.println("");
+        }
+
+        //Each step of the selected path is printed from end to beginning.
+        //Visited special icons are rendered as normal floor dots.
+
+        /*while (step != null) {
             for (int yval = 0; yval < dungeon.ySize(); yval++) {
                 for (int xval = 0; xval < dungeon.xSize(); xval++) {
                     if (step.getTile().getX() == xval && step.getTile().getY() == yval) {
@@ -152,6 +210,6 @@ public class Main {
             }
             System.out.println("");
             step = step.getPreviousStep();
-        }
+        }*/
     }
 }

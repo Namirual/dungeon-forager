@@ -4,7 +4,7 @@ Ohjelmassa on tässä vaiheessa kaksi eri hakutapaa nopeimman reitin selvittämi
 
 ### BFS-Haku
 
-1) Tavallinen haku on BFS-pohjainen algoritmi, joka eroaa tavallisesta BFS-hausta siten, että aina erikoissolmuun tultaessa aloitetaan uusi sykli, jolla on oma listansa käydyistä solmuista.
+1) Tavallinen haku on Dijkstraan perustuva algoritmi, joka eroaa tavallisesta Dijkstra-hausta siten, että aina erikoissolmuun tultaessa aloitetaan uusi sykli, jolla on oma listansa käydyistä solmuista.
 
 ### Vaiheittainen haku
 
@@ -25,3 +25,11 @@ Vaiheittaisen haun toinen vaihe toimii A*:n avulla, jossa olen kokeillut kolmea 
 * ei heuristiikkaa (Dijkstra)
 
 Näistä Manhattan-etäisyys on ehdottomasti tehokkain ja pystyy ratkaisemaan, mutta ennen kuin sen tehokkuutta pääsee kunnolla kokeilemaan, täytyy luolastogenerointia kehittää niin, että luolastot ovat hieman haastavampia.
+
+### Tietorakenteet
+
+Toteutetut tietorakenteet ovat:
+
+* Minimikeko
+* Dynaaminen lista (ArrayList)
+* Hakupuu

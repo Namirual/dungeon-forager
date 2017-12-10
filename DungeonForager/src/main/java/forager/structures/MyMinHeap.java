@@ -20,7 +20,7 @@ public class MyMinHeap<Obj> {
     private final Comparator<Obj> comparator;
 
     public MyMinHeap(Comparator<Obj> comparator) {
-        this.objects = new Object[1000000];
+        this.objects = new Object[10000000];
         this.size = 0;
         this.comparator = comparator;
     }
