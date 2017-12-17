@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package forager;
+package forager.domain;
 
+import forager.domain.Tile;
+import forager.domain.Dungeon;
+import forager.domain.Cycle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import org.junit.Before;
@@ -25,7 +28,6 @@ public class CycleTest {
     Tile tileC;
 
     @Before
-
     public void setUp() {
         tileA = new Tile(1, 1, -1, -1);
         tileB = new Tile(1, 2, -1, -1);

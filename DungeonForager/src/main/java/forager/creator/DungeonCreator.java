@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package forager.creator;
 
 import java.util.Random;
@@ -17,10 +12,18 @@ public class DungeonCreator {
     int ywidth;
     int startingEnergy;
     char[][] map = new char[ywidth][xwidth];
+    Random random;
 
     int energyTiles;
 
-    // Defines the size of the dungeon and the starting energy with which the dungeon is solvable.
+    /**
+     * Defines the size of the dungeon and the starting energy with which the
+     * dungeon is solvable.
+     *
+     * @param xwidth width of the dungeon
+     * @param ywidth height of the dungeon
+     * @param startingEnergy amount of energy at the start of the dungeon
+     */
     public DungeonCreator(int xwidth, int ywidth, int startingEnergy) {
         this.xwidth = xwidth;
         this.ywidth = ywidth;
@@ -30,12 +33,25 @@ public class DungeonCreator {
         energyTiles = 0;
     }
 
-    // Creates a random, solvable dungeon of defined size that is solvable.
-    public char[][] createDungon() {
-        Random random = new Random();
-
+    /**
+     * Creates a random, solvable dungeon.
+     *
+     * @param easy Determines whether an easy or difficult dungeon is created.
+     * @param seed Random seed for the random dungeon.
+     * @return 2d char array containing the dungeon.
+     */
+    public char[][] createDungeon(boolean easy, int seed) {
+        random = new Random();
+        if (seed != 0) {
+            random.setSeed(seed);
+        }
+        
         placeRandomEnergy(5, 4);
-        digWindingPath();
+        if (easy) {
+            digBestPath();
+        } else {
+            digWindingPath();
+        }
 
         for (int yval = 0; yval < ywidth; yval++) {
             for (int xval = 0; xval < xwidth; xval++) {
@@ -45,9 +61,9 @@ public class DungeonCreator {
                 } else if (randomVal < 40) {
                     map[yval][xval] = '#';
                 } else {
-                    map[yval][xval] = ' ';
-                    if (yval > 10) {
-                        map[yval][xval] = ' ';
+                    map[yval][xval] = '.';
+                    if (yval > 30) {
+                        map[yval][xval] = '.';
                     }
                 }
             }
@@ -58,16 +74,18 @@ public class DungeonCreator {
         return map;
     }
 
-    //Places energy at random positions in the dungeon.
-    public void placeRandomEnergy(int val, int offset) {
-        Random random = new Random();
-
+    /**
+     * Places energy at random positions in the dungeon.
+     * @param percentage percentage chance of a tile being energy
+     * @param offset distance from the edge where no energy is placed.
+     */
+    public void placeRandomEnergy(int percentage, int offset) {
         for (int yval = offset; yval < ywidth - offset; yval++) {
             for (int xval = offset; xval < xwidth - offset; xval++) {
                 int randomVal = random.nextInt(100);
                 if (map[yval][xval] != '\0') {
                     continue;
-                } else if (randomVal < val) {
+                } else if (randomVal < percentage) {
                     map[yval][xval] = 'E';
                     energyTiles++;
 
@@ -76,7 +94,10 @@ public class DungeonCreator {
         }
     }
 
-    // Produces an optimal path through the dungeon.
+    /**
+     * Produces a straight path through the dungeon with enough energy on the
+     * route to pass through.
+     */
     public void digBestPath() {
         int x = 1;
         int y = 1;
@@ -106,7 +127,10 @@ public class DungeonCreator {
         }
     }
 
-    // Produces a path through the dungeon that requires backtracking.
+    /**
+     * Produces a path through the dungeon that has enough energy, but requires
+     * backtracking.
+     */
     public void digWindingPath() {
         int x = 0;
         int y = 2;
@@ -116,7 +140,6 @@ public class DungeonCreator {
         while (x < xwidth - 3) {
             energy--;
             map[y][x] = '.';
-            //removeVerticalEnergyTiles(x, y, 4);
             if (energy == 4) {
                 energy += 6;
                 energyTiles++;
@@ -140,8 +163,6 @@ public class DungeonCreator {
             energy--;
 
             map[y][x] = '.';
-            //removeHorizontalEnergyTiles(x, y, 2);
-
             if (energy == 4) {
                 energy += 6;
                 energyTiles++;
@@ -159,8 +180,14 @@ public class DungeonCreator {
         }
     }
 
-    // Removes energy tiles at a horizontal axis from a given location
-    public void removeHorizontalEnergyTiles(int x, int y, int range) {
+    /**
+     * Removes energy tiles at a horizontal axis from a given location.
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @param range distance within which energy tiles are removed
+     */
+    private void removeHorizontalEnergyTiles(int x, int y, int range) {
         int varX = x - range;
         int endX = x + range;
 
@@ -178,7 +205,13 @@ public class DungeonCreator {
         }
     }
 
-    // Removes energy tiles at a horizontal axis from a given location
+    /**
+     * Removes energy tiles at a vertical axis from a given location.
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @param range distance within which energy tiles are removed
+     */
     public void removeVerticalEnergyTiles(int x, int y, int range) {
         int varY = y - range;
         int endY = y + range;

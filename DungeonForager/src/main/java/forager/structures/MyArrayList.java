@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package forager.structures;
 
 import java.util.Iterator;
@@ -10,19 +5,31 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
+ * Partial implementation of a dynamic array.
  *
  * @author lmantyla
+ * @param <Obj> Generic object type.
  */
 public class MyArrayList<Obj> implements Iterable<Obj> {
 
     private Object[] objects;
     private int size;
 
+    /**
+     * Creates a new ArrayList.
+     */
     public MyArrayList() {
         this.objects = new Object[5];
         this.size = 0;
     }
 
+    /**
+     * Adds objects to the ArrayList and dynamically increases the size of the
+     * list as needed.
+     *
+     * @param object object to be added
+     * @return true when successful
+     */
     public boolean add(Object object) {
         if (size >= objects.length) {
             Object[] newArray = new Object[objects.length * 2];
@@ -34,44 +41,72 @@ public class MyArrayList<Obj> implements Iterable<Obj> {
         return true;
     }
 
-    public Obj get(int number) {
-        if (number < size) {
-            return (Obj) objects[number];
+    /**
+     * Returns an object from given index of the array
+     *
+     * @param index index being searched
+     * @return object found
+     */
+    public Obj get(int index) {
+        if (index < size) {
+            return (Obj) objects[index];
         }
         return null;
     }
 
+    /**
+     * Returns an object from given index of the array. System.arraycopy is used
+     * for the shift.
+     *
+     * @param index index being searched
+     * @return object found
+     */
     private void copyToArray(Object[] array, Object[] copied) {
-        for (int val = 0; val < copied.length; val++) {
+        System.arraycopy(copied, 0, array, 0, copied.length);
+        /*for (int val = 0; val < copied.length; val++) {
             array[val] = copied[val];
-        }
+        }*/
     }
 
-    public Obj remove(int number) {
+    /**
+     * Removes and returns the object at a given index from the list. Shifts the
+     * following indices to replace the removed index. System.ArrayCopy is used
+     * for the shift.
+     *
+     * @param index index to be removed
+     * @return object that was removed.
+     */
+    public Obj remove(int index) {
         Object removed;
 
-        if (number < 0) {
+        if (index < 0) {
             return null;
         }
-        if (number > size) {
+        if (index > size) {
             System.out.println("No such object!");
             return null;
         }
-        removed = objects[number];
-        if (number == size) {
+        removed = objects[index];
+        if (index == size - 1) {
             size--;
         } else {
-            while (number + 1 < size) {
-                objects[number] = objects[number + 1];
-                number++;
+            int amount = size - index;
+            System.arraycopy(objects, index + 1, objects, index, amount);
 
-            }
+            /*while (index + 1 < size) {
+                objects[index] = objects[index + 1];
+                index++;
+
+            }*/
             size--;
         }
 
         return (Obj) removed;
     }
 
+    /**
+     * Creates an iterator.
+     */
     @Override
     public Iterator<Obj> iterator() {
         return new Iterator<Obj>() {
@@ -98,6 +133,11 @@ public class MyArrayList<Obj> implements Iterable<Obj> {
         };
     }
 
+    /**
+     * Returns the number of objects in the array.
+     *
+     * @return number of objects
+     */
     public int size() {
         return size;
     }

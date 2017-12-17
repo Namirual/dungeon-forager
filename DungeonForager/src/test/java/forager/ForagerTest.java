@@ -1,10 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package forager;
 
+import forager.domain.Heuristic;
+import forager.domain.Tile;
+import forager.domain.Step;
+import forager.domain.Dungeon;
+import forager.domain.Cycle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -116,13 +116,13 @@ public class ForagerTest {
 
     @Test
     public void foragerFindsRoute() {
-        Step step = forager.searchPath(dungeon.getTile(1, 4), dungeon.getTile(9, 1), 8);
+        Step step = forager.searchPath(dungeon.getTile(1, 4), dungeon.getTile(9, 1), 8, Heuristic.Manhattan);
         assertEquals(step.getTile(), dungeon.getTile(9, 1));
     }
 
     @Test
     public void returnsNullWhenNoPathIsFound() {
-        assertNull(forager.searchPath(dungeon.getTile(1, 4), dungeon.getTile(9, 1), 1));
+        assertNull(forager.searchPath(dungeon.getTile(1, 4), dungeon.getTile(9, 1), 1, Heuristic.Manhattan));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class ForagerTest {
         Dungeon dungeon2 = new Dungeon(stringMap2);
         forager = new Forager(dungeon2);
 
-        Step step = forager.searchPath(dungeon2.getTile(1, 1), dungeon2.getTile(5, 1), 20);
+        Step step = forager.searchPath(dungeon2.getTile(1, 1), dungeon2.getTile(5, 1), 20, Heuristic.Manhattan);
         assertEquals(step.getTimeSpent(), 8);
     }
 
@@ -139,7 +139,7 @@ public class ForagerTest {
         Dungeon dungeon2 = new Dungeon(stringMap2);
         forager = new Forager(dungeon2);
 
-        Step step = forager.searchPath(dungeon2.getTile(1, 1), dungeon2.getTile(5, 1), 20);
+        Step step = forager.searchPath(dungeon2.getTile(1, 1), dungeon2.getTile(5, 1), 20, Heuristic.Manhattan);
         assertEquals(step.getEnergyLeft(), 12);
     }
 
@@ -148,7 +148,7 @@ public class ForagerTest {
         Dungeon dungeon3 = new Dungeon(stringMap3);
         forager = new Forager(dungeon3);
 
-        Step step = forager.searchPath(dungeon3.getTile(2, 1), dungeon3.getTile(5, 1), 1);
+        Step step = forager.searchPath(dungeon3.getTile(2, 1), dungeon3.getTile(5, 1), 1, Heuristic.Manhattan);
         assertEquals(step.getEnergyLeft(), 3);
     }
 

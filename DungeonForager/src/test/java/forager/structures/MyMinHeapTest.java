@@ -1,11 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package forager.structures;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Random;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -63,6 +60,30 @@ public class MyMinHeapTest {
         assertEquals(heap.poll(), 0);
         assertEquals(heap.poll(), 1);
         assertEquals(heap.poll(), 2);
+        assertEquals(heap.poll(), 3);
+        assertEquals(heap.poll(), 5);
+        assertEquals(heap.poll(), 9);
+        assertEquals(heap.poll(), 12);
+    }
+
+    @Test
+    public void addsAndPollsLargeAmounts() {
+        Random random = new Random();
+
+        ArrayList<Integer> testList = new ArrayList<>();
+        for (int val = 0; val < 100; val++) {
+            testList.add(new Integer(random.nextInt(1000000)));
+        }
+
+        for (Integer integer : testList) {
+            heap.add(integer);
+        }
+
+        testList.sort(new IntegerComparator());
+
+        for (int val = 0; val < testList.size(); val++) {
+            assertEquals(testList.get(val), heap.poll());
+        }
     }
 
     @Test

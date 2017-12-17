@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package forager;
+package forager.domain;
 
 import forager.structures.MyArrayList;
 import java.util.List;
@@ -19,6 +14,11 @@ public class Dungeon {
     private Tile[][] dungeonTiles;
     private MyArrayList<Tile> specialTiles;
 
+    /**
+     * Creates a new dungeon from a 2D char array.
+     *
+     * @param map dungeon map in the form of a 2D char array
+     */
     public Dungeon(char[][] map) {
         this.map = map;
 
@@ -26,6 +26,11 @@ public class Dungeon {
         createTileList();
     }
 
+    /**
+     * Creates a new dungeon from a string array.
+     *
+     * @param stringMap dungeon map in the form of a string array
+     */
     public Dungeon(String[] stringMap) {
         map = new char[stringMap.length][stringMap[0].toCharArray().length];
 
@@ -37,6 +42,9 @@ public class Dungeon {
         createTileList();
     }
 
+    /**
+     * Creates a list of tiles in the map.
+     */
     public void createTileList() {
         dungeonTiles = new Tile[ySize()][xSize()];
 
@@ -55,7 +63,13 @@ public class Dungeon {
         }
     }
 
-    // Selects tiles adjacent to a particular tile.
+    /**
+     * Returns a list of non-wall tiles adjacent to a tile at given coordinates.
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @return list of available tiles.
+     */
     public MyArrayList<Tile> getAdjacentTiles(int x, int y) {
         MyArrayList<Tile> adjacentTiles = new MyArrayList<>();
 
@@ -74,6 +88,13 @@ public class Dungeon {
         return adjacentTiles;
     }
 
+    /**
+     * Returns tile at given coordinates.
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @return found tile, null if none exists
+     */
     public Tile getTile(int x, int y) {
         if (isWithinMap(x, y)) {
             return dungeonTiles[y][x];
@@ -81,7 +102,13 @@ public class Dungeon {
         return null;
     }
 
-    //Generates tile information from the map.
+    /**
+     * Generates tile information for given coordinates.
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @return new tile.
+     */
     public Tile createTile(int x, int y) {
         if (!isWithinMap(x, y)) {
             return null;
@@ -101,7 +128,13 @@ public class Dungeon {
         }
     }
 
-    //Checks if coordinates are within bounds.
+    /**
+     * Checks if coordinates are within bounds.
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @return true or false
+     */
     public boolean isWithinMap(int x, int y) {
         if (x < 0 || y < 0 || x >= map[0].length || y >= map.length) {
             return false;
@@ -110,23 +143,51 @@ public class Dungeon {
         }
     }
 
+    /**
+     * Gives the width of the map.
+     *
+     * @return width
+     */
     public int xSize() {
         return map[0].length;
     }
 
+    /**
+     * Gives the height of the map.
+     *
+     * @return height
+     */
     public int ySize() {
         return map.length;
     }
 
+    /**
+     * Returns the character at given coordinates
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @return character
+     */
     public char getChar(int x, int y) {
         return map[y][x];
     }
 
+    /**
+     * Returns an ordered list of special tiles on the map.
+     *
+     * @return list of special tiles
+     */
     public MyArrayList<Tile> getSpecialTiles() {
         return specialTiles;
     }
 
-    // Finds first example of a particular character in the map.
+    /**
+     * Finds first instance of a given character in the map. Mainly used to
+     * locate the starting and ending tiles.
+     *
+     * @param character character to be searched
+     * @return tile with given character
+     */
     public Tile findTileWithChar(char character) {
         for (int yval = 0; yval < ySize(); yval++) {
             for (int xval = 0; xval < xSize(); xval++) {

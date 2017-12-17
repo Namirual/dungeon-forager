@@ -16,6 +16,12 @@ jacocoTestReport {
 
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'forager.Main'
+    }
+}
+
 check.dependsOn jacocoTestReport
 
 sourceCompatibility = '1.8'

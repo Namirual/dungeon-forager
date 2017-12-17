@@ -1,16 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package forager;
 
+import forager.domain.Heuristic;
+import forager.domain.VisitMap;
+import forager.domain.Tile;
+import forager.domain.Step;
+import forager.domain.Line;
+import forager.domain.Dungeon;
+import forager.domain.Cycle;
+import forager.structures.MyArrayList;
 import forager.structures.VisitTree;
 import forager.structures.MyMinHeap;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
 
 /**
  * A*-based search algorithm that operates in two phases.
@@ -19,32 +18,59 @@ import java.util.PriorityQueue;
  */
 public class PhasedForager {
 
-    Dungeon dungeon;
-    int cycles;
-    int reuses;
-    int highestNumberOfCycles = 0;
-    VisitTree visitTree;
+    private Dungeon dungeon;
+    private boolean doReuse;
 
+    private int cycles;
+    private int reuses;
+
+    private int highestNumberOfCycles = 0;
+    private VisitTree visitTree;
+
+    /**
+     * Initialises the forager for a particular dungeon.
+     *
+     * @param dungeon Dungeon the forager is being used for.
+     */
     public PhasedForager(Dungeon dungeon) {
-        this.dungeon = dungeon;
-        cycles = 1;
+        this(dungeon, true);
     }
 
-    // Second phase search algorithm that calculates between special tiles.
-    public Step searchPath(Tile startTile, Tile goalTile, int energy) {
-        //PriorityQueue<Step> availableSteps = new PriorityQueue<>(new AStarStepComparator(goalTile));
-        MyMinHeap<Step> availableSteps = new MyMinHeap<Step>(new AStarStepComparator(goalTile));
+    /**
+     * Initialises the forager for a particular dungeon.
+     *
+     * @param dungeon Dungeon the forager is being used for.
+     * @param reusing true to reuse VisitMaps, false to not do so.
+     */
+    public PhasedForager(Dungeon dungeon, boolean reusing) {
+        this.dungeon = dungeon;
+        visitTree = new VisitTree(dungeon.getSpecialTiles().size());
+        doReuse = reusing;
+        cycles = 1;
+        reuses = 0;
+    }
 
-        createNeigborLists(30, startTile, goalTile);
+    /**
+     * Two-phased search algorithm that simplifies the search by first
+     * calculating by first calculating routes between all special tiles.
+     *
+     * @param startTile the starting tile of the search.
+     * @param goalTile the goal tile for the search.
+     * @param energy amount of energy at the beginning of the search.
+     * @param heuristic heuristic to be used by the heap.
+     * @return the step that first reached the goal tile if successful, null if
+     * not.
+     */
+    public Step searchPath(Tile startTile, Tile goalTile, int energy, Heuristic heuristic) {
+        MyMinHeap<Step> availableSteps = new MyMinHeap<Step>(new AStarStepComparator(goalTile, heuristic));
+
+        createNeigborLists(500, startTile, goalTile);
 
         VisitMap visitMap = new VisitMap(dungeon);
-        visitTree = new VisitTree(dungeon.getSpecialTiles().size());
         visitTree.addVisitMap(visitMap);
 
         Cycle cycle = new Cycle(null, startTile, visitMap);
-
         Step startState = new Step(startTile, null, cycle, energy, 0);
-
         availableSteps.add(startState);
 
         while (availableSteps.size() > 0) {
@@ -69,7 +95,15 @@ public class PhasedForager {
         return null;
     }
 
-    // Checks if a step can be reached with energy and if a new cycle is needed.
+    /**
+     * Creates a new step if the check is possible with the energy available and
+     * checks if a new cycle is needed for the new step.
+     *
+     * @param line Line from the current step currently under consideration to a
+     * new tile.
+     * @param currentStep The step from which the line originates.
+     * @return new Step if the step is possible, null if not.
+     */
     public Step handleNewStep(Line line, Step currentStep) {
         Tile tile = line.getTargetTile();
         int energyLeft = currentStep.getEnergyLeft() - line.getEnergyCost();
@@ -90,7 +124,17 @@ public class PhasedForager {
         return null;
     }
 
-    // Creates a new cycle with either the old visit map or the new one.
+    /**
+     * Creates a new cycle with either the old visit map or the new one. A new
+     * visit map based on the previous one and the newly reached tile is
+     * created, and then used to check if an earlier one with the same explored
+     * special tiles exists. If so, the earlier visit map is used.
+     *
+     * @param currentStep The step from which the line originates
+     * @param tile The tile that was just reached.
+     * @return new cycle, null if the tile was already explored in the
+     * pre-existing visit map.
+     */
     public Cycle createNewCycle(Step currentStep, Tile tile) {
         VisitMap visitMap = new VisitMap(currentStep.getCycle().getVisitMap(), tile);
 
@@ -98,67 +142,48 @@ public class PhasedForager {
 
         VisitMap existingMap = visitTree.findVisitMap(visitMap);
 
-        if (existingMap != null) {
-            if (existingMap.isVisited(tile.getX(), tile.getY())) {
-                return null;
-            }
-
-            /*for (int val = 0; val < visitMap.getSpecialVisited().length; val++) {
-                if (visitMap.getSpecialVisited()[val]) {
-                    System.out.print("1");
-                } else {
-                    System.out.print("0");
-                }
-            }
-            for (int val = 0; val < visitMap.getSpecialVisited().length; val++) {
-                        if (currentStep.getCycle().getVisits().getSpecialVisited()[val]) {
-                            System.out.print("1");
-                        } else {
-                            System.out.print("0");
-                        }
-                    }
-            System.out.println("");*/
+        if (doReuse && existingMap != null) {
             newCycle = new Cycle(currentStep.getCycle(), tile, existingMap);
             reuses++;
         } else {
+
             newCycle = new Cycle(currentStep.getCycle(), tile, visitMap);
             visitTree.addVisitMap(visitMap);
             cycles++;
-
-            if (visitMap.specialTilesVisited > highestNumberOfCycles) {
-                System.out.println("Cycle depth: " + visitMap.specialTilesVisited);
-                highestNumberOfCycles = visitMap.specialTilesVisited;
-            }
         }
         return newCycle;
     }
 
+    /**
+     * Handles creation of neighbor lists for all special tiles.
+     *
+     * @param maxEnergy Maximum amount of energy considered for each step.
+     * @param startTile the start tile for the entire search
+     * @param goalTile the goal tile for the search
+     */
     public void createNeigborLists(int maxEnergy, Tile startTile, Tile goalTile) {
-        for (int yval = 0; yval < dungeon.ySize(); yval++) {
-            for (int xval = 0; xval < dungeon.xSize(); xval++) {
-                Tile tile = dungeon.getTile(xval, yval);
-                if (tile != null && tile.getSpecialCost() != 0) {
-                    tile.setNeighbors(findAccessibleSpecialTiles(tile, maxEnergy));
-
-                    /*System.out.println(tile);
-                    for (Line neightile : tile.getNeighbors()) {
-                        System.out.print(neightile);
-                    }
-                    System.out.println("");*/
-                }
-            }
+        for (Tile tile : dungeon.getSpecialTiles()) {
+            tile.setNeighbors(findAccessibleSpecialTiles(tile, maxEnergy));
         }
+
         startTile.setNeighbors(findAccessibleSpecialTiles(startTile, maxEnergy));
 
         goalTile.setNeighbors(findAccessibleSpecialTiles(goalTile, maxEnergy));
     }
 
-    // Calculates all possible routes from each special tile to other special tiles.
-    public List<Line> findAccessibleSpecialTiles(Tile startTile, int maxEnergy) {
-        //LinkedList<Step> availableSteps = new LinkedList<>();
+    /**
+     * Calculates the best route from one special tile to every other special
+     * tile at range using Dijkstra with a fixed range limit.
+     *
+     * @param startTile Tile
+     * @param maxEnergy Maximum distance in energy for the search.
+     * @return MyArrayList object containing all possible routes from
+     * startTiles.
+     */
+    public MyArrayList<Line> findAccessibleSpecialTiles(Tile startTile, int maxEnergy) {
         MyMinHeap<Step> availableSteps = new MyMinHeap<Step>(new AStarStepComparator(startTile, Heuristic.Dijkstra));
 
-        List<Line> lines = new ArrayList<Line>();
+        MyArrayList<Line> lines = new MyArrayList<Line>();
 
         Cycle cycle = new Cycle(null, startTile, dungeon);
         cycle.setVisited(startTile.getX(), startTile.getY());
@@ -170,7 +195,6 @@ public class PhasedForager {
         while (availableSteps.size() > 0) {
             Step currentStep = availableSteps.poll();
 
-            //currentStep.getCycle().setVisited(currentStep.getTile().getX(), currentStep.getTile().getY());
             for (Tile tile : dungeon.getAdjacentTiles(currentStep.getTile().getX(), currentStep.getTile().getY())) {
                 if (currentStep.getCycle().isVisited(tile.getX(), tile.getY())) {
                     continue;
@@ -191,5 +215,35 @@ public class PhasedForager {
             }
         }
         return lines;
+    }
+
+    /**
+     * Returns the root of the visit tree used by PhasedForager. Only needed in
+     * tests.
+     *
+     * @return Root of the visit tree
+     */
+    public VisitTree getVisitTree() {
+        return visitTree;
+    }
+
+    /**
+     * Returns the amount of reuses of VisitMaps during a run. Used for
+     * diagnostics and tests.
+     *
+     * @return number of reuses
+     */
+    public int getReuses() {
+        return reuses;
+    }
+
+    /**
+     * Returns the amount of new cycles with a new VisitMap during a run. Used
+     * for diagnostics and tests.
+     *
+     * @return number of cycles
+     */
+    public int getCycles() {
+        return cycles;
     }
 }

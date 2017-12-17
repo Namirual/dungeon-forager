@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package forager.structures;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,12 +80,48 @@ public class MyArrayListTest {
     }
 
     @Test
+    public void iteratorHasNextWorks() {
+        list.add(1);
+        list.add(2);
+
+        Iterator<Integer> iterator = list.iterator();
+        assertEquals(iterator.hasNext(), true);
+
+        assertEquals(iterator.next(), (Integer) 1);
+        assertEquals(iterator.next(), (Integer) 2);
+
+        assertEquals(iterator.hasNext(), false);
+    }
+
+    @Test
+    public void removingLessThanZeroRemovesNothing() {
+        list.add(1);
+        list.add(2);
+
+        Integer integer = list.remove(-1);
+
+        assertEquals(integer, null);
+        assertEquals(list.size(), 2);
+    }
+
+    @Test
+    public void removingNumberNotOnListRemovesNothing() {
+        list.add(1);
+        list.add(2);
+
+        Integer integer = list.remove(3);
+
+        assertEquals(integer, null);
+        assertEquals(list.size(), 2);
+    }
+
+    @Test
     public void canRemoveValueFromMiddle() {
         list.add(1);
         list.add(2);
         list.add(null);
         list.add(4);
-        
+
         for (int val = 3; val >= 0; val--) {
             if (list.get(val) == null) {
                 list.remove(val);

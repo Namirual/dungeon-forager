@@ -14,53 +14,54 @@ Kun nämä vaiheet on toteutettu, työtä on vielä mahdollista jatkaa seuraavil
 
 * Kehitetään approksimoivia algoritmeja, jotka kykenevät erilaisilla strategioilla löytämään jonkin ratkaisun luolastoon nopeammin kuin parasta reittiä etsivä reitinhaku. 
 
-* Parannellaan luolaston generointiin käytettyä algoritmia ratkaisualgoritmien tulosten perusteella. Tavoitteena on kehittää algoritmi, joka kykenee luomaan pelillisesti kiinnostavia luolastoja, joihin ei ole liian yksinkertaista ratkaisua, mutta joita on mahdollista ratkaista hieman eri strategioita käyttäen niin, että läpikäytävä reitti on erilainen.
+* Parannellaan luolaston generointiin käytettyä algoritmia ratkaisualgoritmien tulosten perusteella. Tavoitteena on kehittää algoritmi, joka kykenee luomaan pelillisesti kiinnostavia luolastoja, joihin ei ole liian yksinkertaista ratkaisua. Tavoitteena on, että ennen pitkää algoritmia on mahdollista käyttää apuvälineenä pelillisesti kiinnostavien luolastojen suunnitteluun.
 
 
 ### Luolasto
 
 Luolasto on kaksiulotteinen verkko, jolla on alku- ja loppupiste. Verkosto koostuu solmuista, joilla on aika- ja energiapaino. Luolastossa on kolmenlaisia ruutuja:
 
-1. Tavallisia ruutuja, joiden energia- ja kaaripainot ovat 1.
+1. Tavallisia ruutuja, joiden energia- ja kaaripaino on sama arvo.
 * Seiniä, joiden läpi ei voi kulkea.
-* Erikoisruutuja, joilla on positiivinen tai negatiivinen energiapaino. Aikapaino on edelleen 1. 
+* Erikoisruutuja, joilla on positiivinen tai negatiivinen energiapaino. Aikapaino on 1. 
 
 Luolastoa koskevat seuraavanlaiset säännöt:
 
 * Aikakulutus on aina positiivinen.
 
-* Energiakulutus voi olla sekä positiivinen että negatiivinen. Solmuissa, joissa hahmon energiankulutus on negatiivinen, hahmon energiamäärä kasvaa.
+* Energiakulutus voi olla sekä positiivinen että negatiivinen. Solmuissa, joissa energiankulutus on negatiivinen, hahmon energiamäärä nousee.
 
-* Mikäli hahmon energiamäärä on pienempi kuin tunnetun kulutuspaino, kyseiseen solmuun ei voi siirtyä. 
+* Mikäli hahmon energiamäärä on pienempi kuin määränpäänä olevan solmun kulutuspaino, kyseiseen solmuun ei voi siirtyä. 
 
-* Pelaajan energiamäärä voi kasvaa tai pienentyä kussakin solmussa ainostaan kerran.
+* Hahmon energiamäärä voi kasvaa tai pienentyä kussakin erikosruudussa ainostaan kerran. Tämän jälkeen niitä kohdellaan normaaleina ruutuina.
 
-* Pelaajan energiamäärälle voidaan asettaa katto.
-
-* Kun pelaajan energiamäärä ei riitä enää mihinkään siirtoon, peli päättyy.
+* Kun hahmon energiamäärä ei riitä enää mihinkään siirtoon, haku päättyy.
 
 
-###Reitinhakualgoritmi
+### Reitinhakualgoritmi
 
 Toteutan A* :n pohjautuvan algoritmin nopeimman reitin ratkaisemista varten. Tavallisesta A* :sta poiketen ratkaisu edellyttää, että jo kerran läpikäytyihin solmuihin on mahdollista palata sen jälkeen, kun pelaajan energiamäärä on kasvanut. Tämä toteutetaan muuttamalla A*-hakua niin, että kun käsitellään solmua, jossa pelaajan energiamäärä muuttuu vakiosta poikkeavalla tavalla, aloitetaan tästä pisteestä uusi reitinhaku, jolla läpikäytyjen solmujen lista on tyhjä.
 
 Esittämäni ratkaisutapa muistuttaa "Inventory-Driven Jump Point Search" -algoritmia (Aversa & al. 2015).
 
+### Tietorakenteet
 
-### Keskeiset toteutettavat tietorakenteet
+#### Dynaaminen lista (ArrayList)
 
-• Puu polkujen tallentamista varten.
+Toteutan dynaaminen listan kooltaan vaihtelevien tietojen helppoon siirtämiseen ja iteroimiseen. Tavoitteena on **O(1)** aikavaativuus listaan lisäämisen yhteydessä ja **O(n)** listasta poistamisessa.
 
-• Tasapainoitettu hakupuu läpikäytyjen solmujen tallettamista varten.
+#### Minimikeko
 
-• Keko A*-algoritmia varten.
+Minimikeko tarvitaan A*-algoritmia varten. Tavoitteena on **O(n log n)** aikavaativuus kekoon lisäämisessä ja keosta poistamisessa.
+
+#### Tasakorkuinen binäärinen hakupuu
+
+Havaitsin hyödylliseksi toteuttaa erityisen tietorakenteen erikoissolmuiltaan identtisten syklien havaitsemiseksi, jotta haussa voi välttää turhia päällekkäisyyksiä. Tässä tietorakenteessa olemassaolevat syklien käytyjen solmujen kartta tallennetaan puuhun niin, että kullakin kartalla on oma sijaintinsa, joka löydetään vakiomäärällä siirtymisiä alaspäin kartalla. Ratkaisussa pyrin hajautuskarttojen kanssa analogiseen **O(1)**-aikavaativuuteen puuhun lisäämisen ja puusta hakemisen osalta. Tarkempi kuvaus on toteutusdokumentissa.
 
 
 ### Algoritmin tehokkuustavoite
 
-Alustavan taustatutkimukseni perusteella vaikuttaa siltä, että esittämäni ongelman kaltaisiin ongelmiin (esim. Arslan & al. 2015) ei välttämättä ole todella tehokasta yleistä algoritmia; toisaalta myös A*:n tehokkuus riippuu myös verkosta. Esittämäni algoritmin kannalta tavoitteeni onkin ensisijaisesti se, että ratkaisu toimii nopeammin kuin syvyyssuuntainen haku verkoissa, joihin on olemassa ratkaisu.
-
-Mikäli aikaa riittää, pyrin toteuttamaan myös approksimoivan algoritmin, jolla lähes yhtä hyvä ratkaisu löytyy huomattavasti nopeammin.
+Esittämäni ongelman kaltaisiin ongelmiin (esim. Arslan & al. 2015) ei  tunnu olevan todella tehokasta yleistä algoritmia, ja on odotettavissa, että erikoissolmujen määrän kasvaessa myös käynnissä olevien hakujen määrä kasvaa eksponentiaalisesti. Esittämäni algoritmin kannalta tavoitteeni onkin ensisijaisesti se, että ratkaisu on nopeampi kuin yksinkertaiset vaihtoehdot kuten syvyyssuuntainen haku. Tavoitteenani on kokeilla erilaisia optimointeja algoritmissa niin, että haut ovat mahdollisia mahdollisimman suurissa kartoissa.
 
 ### Lähteet
 

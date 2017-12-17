@@ -1,11 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package forager;
 
+import forager.domain.Heuristic;
+import forager.domain.Step;
+import forager.domain.Dungeon;
 import forager.creator.*;
+import java.io.File;
+import java.util.Scanner;
 import java.util.Stack;
 
 /**
@@ -28,174 +28,160 @@ public class Main {
             "#S...#..E...#",
             "#############"
         };
-        String[] stringMap2 = new String[]{
-            "##E.#...###....",
-            ".S...E.........",
-            "..#.#.#.#..#.E#",
-            "#.####.#E..#...",
-            "......#E..###.#",
-            "...#..E..E..#..",
-            "..###.#.#......",
-            ".####.#...##...",
-            "##.##.E..##E..#",
-            "...##.....##...",
-            ".#..#.#..###...",
-            ".E#####.E##....",
-            "###....#....#E.",
-            ".######.#...#G.",
-            "...###.#...##.."
+
+        String[] stringMapEnemies = new String[]{
+            "###############",
+            "#S...E.O...O.E#",
+            "#.#E..#.#..#OO#",
+            "#O####.#E..#E.#",
+            "#.....#...##.E#",
+            "#.E#E......####",
+            "#O#####.#.....#",
+            "#..E#.#...##..#",
+            "#...#.E...#E..#",
+            "#..E###...#...#",
+            "#...#E#..##O###",
+            "#E..#.#.E#OOOO#",
+            "#####...OOOO#O#",
+            "#######.#...#G#",
+            "###############"
         };
 
-        String[] stringMap3 = new String[]{
-            "#E#.#..######....##.",
-            ".S...E.........E....",
-            "#.#.#..#...#....##.#",
-            "..##.#..##.....#....",
-            ".#.#...#.E.....#....",
-            "##...###.#..#E.....#",
-            ".##..#....##...##..#",
-            "###.#.....#...#.##E.",
-            "E..#.#........#.....",
-            "##..###..##E#.......",
-            ".E#.#.##..#..#..#...",
-            "..#...##..#.#..#.#..",
-            "....#.#...#.#.E..#.#",
-            "..E..#E.#...#.#....#",
-            ".....#.#.###.#.....#",
-            "E.....####...#.#.E..",
-            "..##...E.....#..##.#",
-            ".....##.#...#.....E#",
-            "...#...#.#.##.#.#.G.",
-            "...###.#.#..#.##...#"
+        String[] symmetricMap = new String[]{
+            "##############",
+            "#.E..#...#...#",
+            "#S.#...#...#G#",
+            "#.E..#...#...#",
+            "##############"
         };
 
-        String[] stringMap4 = new String[]{
-            "..#..#.#.......#...#.#......E.#...#..##..E##.E#.##",
-            ".S...E.........E.........E.........E.........E....",
-            ".#..E.#E.##..#....#...##..#..##...##..##...##..#..",
-            "#.#...#...#..###.#.##..#.#.E.#...#...#.......#....",
-            "..#.#....#.#E##..#EE..#EE.E.#....#......#.#...##.#",
-            "##.##.....E.#.E##..E...##....E.##.#.....##.....#..",
-            "##.#....#.##....#....##.#..........###..#.#.E.#...",
-            "..###.#...##...#.....##.#####..#.###.#.#...#...#E.",
-            "#.......#..#....#..#..#.#.....#..E.#...#####.##..E",
-            "...#.##.#.###.####.......##...##.#...####..#...#..",
-            "##....#.....#.#.......E#...##..E......####..#.....",
-            "####.###..#.#..#.##..#.#.#....##..EE..E#.....#...#",
-            "..#..##..#...E.##.#..E.#.#...#.E#.##....###.#..E.#",
-            ".E#...#....#........#.#.#.###....#...E....##.....#",
-            "..#.#....E.###....#.##..#..#.......#....E...###...",
-            "#.#....#.......#.##.E###E.##....#..##..##E..#.##.#",
-            "###.##...#..#..###..##..E#.#...##E#.##..#...E.#...",
-            "####....#..###...#.#.......E#....#..##...##.##..E.",
-            "...#..##..###....E...#E#.#.....E.##E.#..#.....#...",
-            ".#.#..##......#.#....#....###...##.#.....#.#E#E...",
-            "..E##.E##..#............#..####..##.##....#...#..#",
-            ".E..#.....#..#.........#...#..E.#E##.#...#.E#.##.#",
-            "####...####.#..#....#.####E#..##..#..#..#.#####..#",
-            "..E..E..####...##..##..#E..E.#..#..#.##...#.#....E",
-            ".#.E.....#E.###.....#.#EE#......#.E....###.#.#...#",
-            "...#.....##...##...###.....##.##..##...###....#...",
-            "........E.#.#.#.#.#E#...#.#......#.#....##.#..#..#",
-            "#..#....E.#..##.#.###..E.#...##..##E.#.##.#E....E.",
-            ".#.......#...E.#....#.....##E....#...##E.#..#.....",
-            "...###.#....##...#...##.....###..##.#..........#..",
-            "#..#....#.####.......#.#..##..##.##E..........#..E",
-            "E#.#.#.#.#....##..###.##.##..#.E...E.#.......#.#..",
-            "##..##..####..E.#.#.#.....##..#.....##E.####...E..",
-            "..E...#E..#..#.#...#...#.....#..E.##..#.#......#..",
-            "#.##.#.#.#..###.#..#.#.###...#..###.#..#.##......#",
-            "##.#.#E....#.#.#....#E#..#.##.#.E.#.#....E...#...#",
-            "...#.#..####.#E.....E...#.##...#...#E..###..#..#..",
-            "...##.#....E.#....##.....##...E.#..#.E...#.##E##E.",
-            "E..##..#..E..###...###....##E..###..........#..E.E",
-            ".#.##..#.......##..##.####.#.E#.#E...#...#.E.#.#..",
-            "####.E.#....###.##.###............#..#....###..#..",
-            "#####.E#...#..#..E...#..#.#....#..#......#........",
-            "#.#.E.....######.E.#.#..#....#.E#...#####...E#.#.#",
-            "###.E#..E.#E###....#..#..#...###EE..##..##..#.##..",
-            "....#..######.#.#.....#....##.#.#.###.#.#.#..#....",
-            ".###..#####.#E#EE.......#...#...#.#.#######....E.#",
-            ".#..E.#..#...#.##.#....##.#.#.#E.#.E...E.......#..",
-            "#...##.#.#......###.##E......E#..#..#..#.##.##..E#",
-            ".......##..##..#...#.#.#.#..E#E##.#..#..##..#.#.GE",
-            "##.......#.......#....##...#......#...#.#.#..#...#"
-        };
+        Scanner scanner = new Scanner(System.in);
 
-        DungeonCreator creator = new DungeonCreator(60, 60, 5);
+        System.out.println("Tervetuloa testaamaan luolastokeräilijää!");
 
-        //Dungeon dungeon = new Dungeon(stringMap);
-        Dungeon dungeon = new Dungeon(creator.createDungon());
+        Dungeon dungeon = null;
+        int energy = 0;
 
-        PhasedForager forager = new PhasedForager(dungeon);
-        Forager simpleForager = new Forager(dungeon);
+        while (true) {
+            System.out.println("l: lataa luolasto");
+            System.out.println("c: luo uusi luolasto");
+            System.out.println("q: exit");
 
-        //Pathfinding is initiated. A tile with 'S' is given as start, 'G' as goal.
-        Step step = forager.searchPath(dungeon.findTileWithChar('S'),
-                dungeon.findTileWithChar('G'), 6);
-
-        if (step == null) {
-            System.out.println("No path found!");
-            return;
-        }
-
-        System.out.println("Travel time: " + step.getTimeSpent());
-
-        //We represent the path taken by putting all steps in a stack.
-        //Then we calculate the in-between steps and insert them to a matrix.
-        int[][] stepList = new int[dungeon.ySize()][dungeon.xSize()];
-
-        java.util.Stack<Step> allSteps = new Stack<Step>();
-
-        Step stackStep = step;
-
-        while (stackStep != null) {
-            allSteps.add(stackStep);
-            stackStep = stackStep.getPreviousStep();
-        }
-
-        while (!allSteps.isEmpty()) {
-            Step currentStep = allSteps.pop();
-
-            if (allSteps.isEmpty()) {
-                break;
+            String text = scanner.nextLine();
+            if (text.equals("q")) {
+                return;
             }
-            Step nextStep = allSteps.peek();
-            Step betweenStep = simpleForager.searchPath(currentStep.getTile(), nextStep.getTile(), 30);
-            betweenStep = betweenStep.getPreviousStep();
 
-            while (betweenStep != null) {
-                stepList[betweenStep.getTile().getY()][betweenStep.getTile().getX()]++;
-                betweenStep = betweenStep.getPreviousStep();
+            if (text.equals("c")) {
+                System.out.println("Anna luolaston leveys: ");
+                int width = Integer.parseInt(scanner.nextLine());
+                System.out.println("Anna luolaston korkeus: ");
+                int height = Integer.parseInt(scanner.nextLine());
+                System.out.println("Anna alussaoleva energiamäärä: ");
+                energy = Integer.parseInt(scanner.nextLine());
+                DungeonCreator creator = new DungeonCreator(width, height, energy);
+                dungeon = new Dungeon(creator.createDungeon(false, 0));
+
             }
-        }
 
-        // We print the dungeon once.
-        for (int yval = 0; yval < dungeon.ySize(); yval++) {
-            for (int xval = 0; xval < dungeon.xSize(); xval++) {
-                System.out.print("" + dungeon.getChar(xval, yval));
+            if (text.equals("l")) {
+                System.out.println("Anna tiedoston nimi, esim. dungeon.txt");
+                String name = scanner.nextLine();
+
+                String[] dungeonStrings = new String[200];
+                File file = new File("");
+                file = new File(file.getPath() + name);
+                Scanner fileScanner = null;
+
+                try {
+                    fileScanner = new Scanner(file);
+                } catch (Exception e) {
+                    System.out.println("Ongelma: " + e);
+                }
+                int line = 0;
+                while (fileScanner.hasNextLine()) {
+                    dungeonStrings[line] = fileScanner.nextLine();
+                    line++;
+                }
+
+                String[] map = new String[line];
+                for (int val = 0; val < line; val++) {
+                    map[val] = dungeonStrings[val];
+                }
+                dungeon = new Dungeon(map);
+                
+                System.out.println("Anna alussa oleva energiamäärä: ");
+                energy = Integer.parseInt(scanner.nextLine());
             }
-            System.out.println("");
-        }
-        
-        System.out.println("\n");
 
-        // We print the dungeon again, showing number of visits on each tile on best path.
-        for (int yval = 0; yval < dungeon.ySize(); yval++) {
-            for (int xval = 0; xval < dungeon.xSize(); xval++) {
-                if (stepList[yval][xval] > 0) {
-                    System.out.print(stepList[yval][xval]);
-                } else {
+            // We print the dungeon once.
+            for (int yval = 0; yval < dungeon.ySize(); yval++) {
+                for (int xval = 0; xval < dungeon.xSize(); xval++) {
                     System.out.print("" + dungeon.getChar(xval, yval));
                 }
+                System.out.println("");
             }
-            System.out.println("");
-        }
 
-        //Each step of the selected path is printed from end to beginning.
-        //Visited special icons are rendered as normal floor dots.
+            PhasedForager forager = new PhasedForager(dungeon);
+            Forager simpleForager = new Forager(dungeon);
 
-        /*while (step != null) {
+            //Pathfinding is initiated. A tile with 'S' is given as start, 'G' as goal.
+            Step step = forager.searchPath(dungeon.findTileWithChar('S'),
+                    dungeon.findTileWithChar('G'), energy, Heuristic.Manhattan);
+
+            if (step == null) {
+                System.out.println("No path found!");
+            }
+
+            System.out.println("Travel time: " + step.getTimeSpent());
+
+            //We represent the path taken by putting all steps in a stack.
+            //Then we calculate the in-between steps and insert them to a matrix.
+            int[][] stepList = new int[dungeon.ySize()][dungeon.xSize()];
+
+            java.util.Stack<Step> allSteps = new Stack<Step>();
+
+            Step stackStep = step;
+
+            while (stackStep != null) {
+                allSteps.add(stackStep);
+                stackStep = stackStep.getPreviousStep();
+            }
+
+            while (!allSteps.isEmpty()) {
+                Step currentStep = allSteps.pop();
+
+                if (allSteps.isEmpty()) {
+                    break;
+                }
+                Step nextStep = allSteps.peek();
+                Step betweenStep = simpleForager.searchPath(currentStep.getTile(), nextStep.getTile(), 30, Heuristic.Manhattan);
+                betweenStep = betweenStep.getPreviousStep();
+
+                while (betweenStep != null) {
+                    stepList[betweenStep.getTile().getY()][betweenStep.getTile().getX()]++;
+                    betweenStep = betweenStep.getPreviousStep();
+                }
+            }
+
+            System.out.println("\n");
+
+            // We print the dungeon again, showing number of visits on each tile on best path.
+            for (int yval = 0; yval < dungeon.ySize(); yval++) {
+                for (int xval = 0; xval < dungeon.xSize(); xval++) {
+                    if (stepList[yval][xval] > 0) {
+                        System.out.print(stepList[yval][xval]);
+                    } else {
+                        System.out.print("" + dungeon.getChar(xval, yval));
+                    }
+                }
+                System.out.println("");
+            }
+
+            //Each step of the selected path is printed from end to beginning.
+            //Visited special icons are rendered as normal floor dots.
+
+            /*while (step != null) {
             for (int yval = 0; yval < dungeon.ySize(); yval++) {
                 for (int xval = 0; xval < dungeon.xSize(); xval++) {
                     if (step.getTile().getX() == xval && step.getTile().getY() == yval) {
@@ -211,5 +197,6 @@ public class Main {
             System.out.println("");
             step = step.getPreviousStep();
         }*/
+        }
     }
 }

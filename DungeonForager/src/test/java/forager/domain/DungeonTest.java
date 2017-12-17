@@ -1,10 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package forager;
+package forager.domain;
 
+import forager.domain.Tile;
+import forager.domain.Dungeon;
 import forager.structures.MyArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -18,6 +15,7 @@ import static org.junit.Assert.*;
 public class DungeonTest {
 
     Dungeon dungeon;
+    Dungeon stringDungeon;
 
     String[] stringMap = new String[]{
         "#############",
@@ -39,13 +37,24 @@ public class DungeonTest {
 
     @Before
     public void setUp() {
+        stringDungeon = new Dungeon(stringMap);
         dungeon = new Dungeon(testStringMap);
 
     }
 
     @Test
     public void CorrectSizedDungeonIsCreatedFromString() {
-        assertEquals(dungeon.ySize(), stringMap.length);
+        assertEquals(stringDungeon.ySize(), stringMap.length);
+        assertEquals(stringDungeon.xSize(), stringMap[1].length());
+
+    }
+
+    @Test
+    public void CorrectSizedDungeonIsCreatedFromCharArray() {
+        char[][] dungeonMap = new char[10][15];
+        Dungeon charDungeon = new Dungeon(dungeonMap);
+        assertEquals(charDungeon.ySize(), 10);
+        assertEquals(charDungeon.xSize(), 15);
     }
 
     @Test
@@ -82,5 +91,4 @@ public class DungeonTest {
         MyArrayList<Tile> tiles = dungeon.getAdjacentTiles(4, 4);
         assertEquals(tiles.size(), 0);
     }
-
 }
