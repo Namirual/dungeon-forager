@@ -2,21 +2,21 @@
 
 # Keräilevä reitinhaku
 
-Ohjelman keskeinen tavoite on nopeimman reitin selvittämiseen luolastossa samalla varmistaen, ettei energia koskaan lopu kesken haun aikana. Algoritmilla on kolme kehitysvaihetta, joiden toimintaa vertaillaan testausdokumentissa. 
+Ohjelman keskeinen tavoite on nopeimman reitin selvittämiseen luolastossa (Dungeon-olio, jonka yksittäiset ruudut representoidaan Tile-olioina) samalla varmistaen, ettei energia koskaan lopu kesken haun aikana. Algoritmilla on kolme kehitysvaihetta, joiden toimintaa vertaillaan testausdokumentissa. 
 
 ### Forager
 
-Ensimmäinen toteuttamani versio keräilevästä hausta on A*ia hyödyntävä algoritmi, jonka keskeinen ominaisuus on, että aina erikoissolmuun tultaessa aloitetaan uusi sykli, jolla on oma listansa käydyistä solmuista. Tämä mahdollistaa sen, että algoritmissa on mahdollista palata takaisin samaa reittiä pitkin, mitä erikoissolmuun tultiin.
+Ensimmäinen toteuttamani versio keräilevästä hausta on A*ia hyödyntävä algoritmi, joka luo askeleista koostuvan puun (Step-oliot). Askeleet muistavat mikä edellinen askel oli, jolloin ensimmäisen loppuun päässeen askeleen kautta voi selvittää koko nopeimman reitin. Haun erityisominaisuus on, että aina erikoissolmuun tultaessa aloitetaan uusi sykli (Step-olioon liittyvä Cycle-olio), jolla on oma listansa käydyistä solmuista. Tämä mahdollistaa sen, että algoritmissa on mahdollista palata takaisin samaa reittiä pitkin, jonka kautta erikoissolmuun tultiin.
 
-Onnistuessaan haku ratkaisee nopeimman mahdollisen reitin. Koska uuden haun läpikäytävät solmut lisätään samaan kekoon kuin edellisen, uuden haun askeleet etenevät samassa tahdissa alkuperäisen kanssa, ja ensimmäisenä maaliin ehtivä askel on nopein mahdollinen reitti maaliin. 
+Onnistuessaan haku löytää nopeimman mahdollisen reitin: koska uuden haun läpikäytävät solmut lisätään samaan kekoon kuin edellisen, uuden haun askeleet etenevät samassa tahdissa alkuperäisen kanssa, ja ensimmäisenä maaliin ehtivä askel on nopein mahdollinen reitti maaliin. 
 
 ### PhasedForager
 
-Vaiheittainen keräilevä reitinhaku toimii samalla periaatteella kuin tavallinen, mutta lisäksi lasketaan erikoissolmujen väliset etäisyydet ja kulutetut energiamäärät ja käytetään tätä tietoa solmujen vieruslistoina toisessa haussa, joka etsii parhaan erikoissolmujen kautta kulkevan reitin, joka päätyy maaliin. Näin toimittaessa ei jouduta laskemaan uudelleen erikoissolmujen välisiä reittejä. Kustakin erikoissolmusta aloitetaan uusi sykli, mikäli kyseinen haku ei ole käynyt kyseisessä syklissä aiemmin.
+Kaksivaiheisessa keräilevässä reitinhaussa lasketaan lisäksi erikoissolmujen väliset etäisyydet ja kulutetut energiamäärät jotka talletetaan Line-olioiksi kunkin erikoissolmun yhteyteen. Näitä tietoa käytetään solmujen vieruslistoina toisessa haussa, joka etsii nopeimman erikoissolmujen kautta kulkevan reitin, joka päätyy maaliin. Näin toimittaessa ei jouduta laskemaan uudelleen erikoissolmujen välisiä reittejä. Kustakin erikoissolmusta aloitetaan uusi sykli, mikäli kyseinen haku ei ole käynyt kyseisessä syklissä aiemmin.
 
 ### PhasedForager with map reuse
 
-Viimeinen variaatiossa useampi sykli voi jakaa saman listan läpikäydyistä solmuista. Tämä on mahdollista silloin, kun sykleissä on käyty täsmälleen samoissa erikoissolmuissa eri järjestyksessä, jolloin syklit ovat myös keränneet saman määrän energiaa; tällöin tiettyyn solmuun ajallisesti ensin päässeellä solmulla on enemmän energiaa ja edustaa siis parasta mahdollista tapaa päästä kyseiseen solmuun. Toiminto ei merkittävästi nopeuta hakua, mutta säästää jonkin verran muistia.
+Viimeinen variaatiossa useampi sykli voi jakaa saman tiedon läpikäydyistä solmuista (VisitMap-olio). Tämä on mahdollista silloin, kun sykleissä on käyty täsmälleen samoissa erikoissolmuissa eri järjestyksessä, jolloin syklit ovat myös keränneet saman määrän energiaa; tällöin tiettyyn solmuun ajallisesti ensin päässeellä solmulla on enemmän energiaa ja edustaa siis parasta mahdollista tapaa päästä kyseiseen solmuun. Toiminto ei merkittävästi nopeuta hakua, mutta säästää jonkin verran muistia.
 
 Kartan uudelleenkäytön kanssa läpikäyntikarttojen teoreettinen maksimimäärä on erikoissolmujen käyntitilojen kombinaatioiden joukko, eli **2<sup>n</sup>**. Koska jokaista karttaa kohden voi tulla oma reitinhakunsa, saadaan A*:n aikavaativuudella kertomalla haun aikavaativuudeksi eksponentiaalinen **O(2<sup>n</sup> * (m log m)**, missä n on erikoissolmujen määrä ja m on luolaston solmujen määrä.
 
@@ -49,7 +49,7 @@ VisitMap-oliot eritellään toisistaan perustuen boolean-taulukkoon, jonka pituu
 
 Koska puun korkeus, ja siitä riippuvaisten operaatioiden aikavaativuus, riippuu erikoissolmulistan koosta, uuhun lisääminen ja siitä poistaminen ovat nopeudeltaan verrannollisia hajautustaulukkoihin: hajautusfunktio, jolla voidaan laskea VisitMap -tietorakenteen tiiviste, joutuu myös käymään läpi olion tunnisteena toimivan boolean-taulukon, mutta raskaammalla tavalla kuin käyttämäni hakupuumalli.
 
-Koska lisättyjen solmujen määrä ei suoraan vaikuta puun korkeuteen, ovat puuhun puskemisen (push) ja poistamisen (pop) aikavaativuudeltaan molemmat **O(1)**. Tämä oli testauksessa helppo todentaa vertailulla HashSet -tietorakenteeseen, joka toteuttaa nämä aikavaativuudet. 
+Koska lisättyjen solmujen määrä ei suoraan vaikuta puun korkeuteen, ovat puuhun puskemisen (push) ja siitä poistamisen (pop) aikavaativuudeltaan molemmat **O(1)**. Tämä oli testauksessa helppo todentaa vertailulla HashSet -tietorakenteeseen, joka toteuttaa nämä aikavaativuudet. 
 
 # Jatko
 
