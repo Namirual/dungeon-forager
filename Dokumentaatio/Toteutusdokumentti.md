@@ -35,11 +35,11 @@ Näistä Manhattan-etäisyys toimii selvästi parhaiten, sillä luolasto on ilma
 
 ### Minimikeko binääripuussa
 
-Toteuttamani minimikeko on automaattisesti järjestyvä puurakenne, jossa kaikki puun solmut sijaitsevat yhdessä taulukossa; suhteet solmujen välillä perustuvat solmujen sijaintiin. Toteutustapa vastaa olennaisilta osiltaan Tietorakenteet ja algoritmit -kurssin pseudokoodia sillä erotuksella, että heapify() -metodi on toteutettu iteratiivisena. Puuhun lisäämisen ja puun juuressa olevan solmun poistaminen ovat aikavaativuuksiltaan **O(log n)**.
+Toteuttamani minimikeko on automaattisesti järjestyvä puurakenne, jossa kaikki puun solmut sijaitsevat yhdessä taulukossa; suhteet solmujen välillä perustuvat solmujen sijaintiin. Toteutustapa vastaa olennaisilta osiltaan Tietorakenteet ja algoritmit -kurssin pseudokoodia (Kivinen 2017: 401–418) sillä erotuksella, että heapify() -metodi on toteutettu iteratiivisena. Puuhun lisäämisen ja puun juuressa olevan solmun poistaminen ovat aikavaativuuksiltaan **O(log n)**.
 
 ### Dynaaminen lista (ArrayList)
 
-Toteutin automaattisesti itseään kasvattavan listan erityisesti luokkien välistä tiedonsiirtoa varten. Dynaamisen listan toteutetut toiminnot ovat listan päähän lisääminen, indeksin perusteella hakeminen sekä listasta poistaminen indeksin perusteella. Tällöin poistettua alkiota seuraavat alkiot siirretään kukin listassa yksi alaspäin. Lisääminen aikavaativuus on **O(1)**, poistamisen aikavaativuus on pahimmassa tapauksessa **O(n)**.
+Toteutin automaattisesti itseään kasvattavan listan erityisesti luokkien välistä tiedonsiirtoa varten. Dynaamisen listan toteutetut toiminnot ovat listan päähän lisääminen, indeksin perusteella hakeminen sekä listasta poistaminen indeksin perusteella. Tällöin poistettua alkiota seuraavat alkiot siirretään kukin listassa yksi alaspäin. Lisääminen aikavaativuus on **O(1)**, poistamisen aikavaativuus on pahimmassa tapauksessa **O(n)**, jos kaikkia listan alkioita täytyy siirtää.
 
 ### Tasakorkuinen binäärinen hakupuu
 
@@ -53,4 +53,9 @@ Koska lisättyjen solmujen määrä ei suoraan vaikuta puun korkeuteen, ovat puu
 
 # Jatko
 
-Vaikka tehokkain versio algoritmista riittäisi jo analysoimaan monia esimerkiksi peleissä esiintyviä karttoja ja luolastoja, kasvaa ongelma silti nopeasti eksponentiaalisesti. En tämän projektin aikana ehtinyt toteuttaa harkitsemiani approksimoivia algoritmeja, mutta ongelman vaikeus on tehnyt ilmeiseksi, että sellainen voisi olla hyödyllinen ja tarpeellinen.
+Vaikka tehokkain versio algoritmista riittäisi jo analysoimaan monia esimerkiksi peleissä esiintyviä karttoja ja luolastoja, kasvaa tehtävän silti nopeasti eksponentiaalisesti. En tämän projektin aikana ehtinyt toteuttaa harkitsemiani approksimoivia algoritmeja, mutta ongelman vaikeus on tehnyt ilmeiseksi, että sellainen voisi olla hyödyllinen ja tarpeellinen. Luolastojen generoinnin muuntaminen enemmän varsinaisia kohteita muistuttavaan suuntaan tarjoaisi myös lisää mahdollisuuksia tarkastella algoritmin kohtaamia todellisia haasteita.
+
+
+### Lähteet
+
+Kivinen, J. 2017. *58131 Tietorakenteet ja algoritmit -kurssimateriaali, kevät 2017*.
